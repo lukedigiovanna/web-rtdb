@@ -63,11 +63,22 @@ int main(int argc, char* args[]) {
 
     int n;
     while (true) {
-        std::cout << "Awaiting client response" << std::endl;
+        // std::cout << "Awaiting client response" << std::endl;
         memset(&msg, 0, sizeof(msg)); // clear message buffer
         n = recv(clientSocket, (char*) &msg, sizeof(msg), 0);
-        std::cout << "Client: " << msg;
+        std::cout << "Client: " << msg << std::endl;
+        if (!strcmp(msg, "EXIT")) {
+            send(clientSocket, 0, 0, 0);
+            break;
+        }
+        else if (!strcmp(msg, "PING")) {
+            strcpy(msg, "PONG");
+            send(clientSocket, msg, 5, 0);
+            continue;
+        }
+        std::cout << "> ";
         std::string data;
+        getline(std::cin, data);
         send(clientSocket, data.c_str(), data.length() + 1, 0);
     }
 
