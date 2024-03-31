@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Connecting to a websocket test.
+        </title>
+    </head>
+    <body>
+        <script>
+            // Create a new WebSocket.
+            const socket = new WebSocket('ws://localhost:8090');
+
+            // Connection opened event listener.
+            socket.addEventListener('open', function (event) {
+                console.log('Connected to the WebSocket server');
+                // Send a message to the server once the connection is opened.
+                socket.send('Hello, server!');
+            });
+
+            // Listen for messages from the server.
+            socket.addEventListener('message', function (event) {
+                console.log('Message from server:', event.data);
+            });
+
+            // Listen for possible errors.
+            socket.addEventListener('error', function (event) {
+                console.error('WebSocket error:', event);
+            });
+
+            // Listen for the close event.
+            socket.addEventListener('close', function (event) {
+                console.log('Disconnected from the WebSocket server');
+            });
+        </script>
+    </body>
+</html>
