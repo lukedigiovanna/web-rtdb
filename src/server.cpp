@@ -2,11 +2,14 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <poll.h>
 
 #define MAX_BUFFER_SIZE 1024
 
@@ -16,6 +19,13 @@ std::string formatIPAddress(const sockaddr_in& socketAddress) {
     std::stringstream ss;
     ss << addr << ":" << port;
     return ss.str(); 
+}
+
+// Marks a given socket file descriptor as non-blocking
+void setNonBlocking(int sockfd) {
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags < 0) return;
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 }
 
 int main(int argc, char* args[]) {
@@ -39,6 +49,8 @@ int main(int argc, char* args[]) {
         throw std::runtime_error("Error creating socket");
     }
 
+    setNonBlocking(sockfd);
+
     if (bind(sockfd, (const sockaddr*) &serverAddress, sizeof(serverAddress)) < 0) {
         throw std::runtime_error("Error binding socket");
     }
@@ -51,39 +63,56 @@ int main(int argc, char* args[]) {
     // listen for up to 5 clients at a time
     listen(sockfd, 5);
 
-    sockaddr_in clientAddress;
-    socklen_t sockSize = sizeof(clientAddress);
+    std::vector<pollfd> fds;
+    fds.push_back({sockfd, POLLIN, 0});
 
-    int clientSocket;
-    if ((clientSocket = accept(sockfd, (sockaddr*) &clientAddress, &sockSize)) < 0) {
-        throw std::runtime_error("Error accepting request from client");
-    }
-
-    std::cout << "Connected a client" << std::endl;
-
-    int n;
     while (true) {
-        // std::cout << "Awaiting client response" << std::endl;
-        memset(&msg, 0, sizeof(msg)); // clear message buffer
-        n = recv(clientSocket, (char*) &msg, sizeof(msg), 0);
-        std::cout << "Client: " << msg << std::endl;
-        if (!strcmp(msg, "EXIT")) {
-            send(clientSocket, 0, 0, 0);
-            break;
-        }
-        else if (!strcmp(msg, "PING")) {
-            strcpy(msg, "PONG");
-            send(clientSocket, msg, 5, 0);
+        if (poll(fds.data(), fds.size(), -1) < 0) {
+            std::cerr << "Error polling" << std::endl;
             continue;
         }
-        std::cout << "> ";
-        std::string data;
-        getline(std::cin, data);
-        send(clientSocket, data.c_str(), data.length() + 1, 0);
+
+        for (size_t i = 0; i < fds.size(); i++) {
+            if (fds[i].revents & POLLIN) { // read event
+                if (fds[i].fd == sockfd) { // on server socket (i.e. new connection)
+                    sockaddr_in clientAddress;
+                    socklen_t addrlen = sizeof(clientAddress);
+                    int clientfd = accept(sockfd, (sockaddr*) &clientAddress, &addrlen);
+                    if (clientfd >= 0) {
+                        fds.push_back({clientfd, POLLIN, 0});
+                        std::cout << "A new client connected!\n";
+                    }
+                }
+                else { // Data from client
+                    memset(&msg, 0, sizeof(msg)); // clear message buffer
+                    int n = recv(fds[i].fd, &msg, sizeof(msg), 0);
+                    if (n > 0) {
+                        if (!strcmp(msg, "EXIT")) {
+                            close(fds[i].fd);
+                            fds.erase(fds.begin() + i);
+                            std::cout << "Client disconected" << std::endl;
+                            i--;
+                        }
+                        else if (!strcmp(msg, "PING")) {
+                            strcpy(msg, "PONG");
+                            send(fds[i].fd, msg, 5, 0);
+                            continue;
+                        }
+                        std::string data = "ECHO: " + std::string(msg);
+                        send(fds[i].fd, data.c_str(), data.length() + 1, 0);
+                    }
+                    else {
+                        close(fds[i].fd);
+                        fds.erase(fds.begin() + i);
+                        std::cout << "Client disconected" << std::endl;
+                        i--;
+                    }
+                }
+            }
+        }
     }
 
     close(sockfd);
-    close(clientSocket);
 
     return 0;
 }
