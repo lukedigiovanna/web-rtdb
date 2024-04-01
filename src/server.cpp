@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <functional>
+#include <map>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -12,6 +14,7 @@
 #include <poll.h>
 
 #define MAX_BUFFER_SIZE 1024
+#define NUM_FUNCTIONS 7
 
 std::string formatIPAddress(const sockaddr_in& socketAddress) {
     int port = ntohs(socketAddress.sin_port);
@@ -28,13 +31,98 @@ void setNonBlocking(int sockfd) {
     fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 }
 
-int main(int argc, char* args[]) {
+// str must be zero-terminated.
+// splits string by spaces. treats quotationed values as whole arguments.
+int splitArgs(const char* str, std::vector<std::string>& args) {
+    size_t len = strlen(str);
+    size_t lastTokenIndex = 0;
+    bool inQuote = false;
+    for (size_t i = 0; i < len; i++) {
+        if (str[i] == '\"') {
+            inQuote = !inQuote;
+            if (!inQuote) {
+                // This terminated a quote, so add this argument
+                if (i + 1 >= len || str[i + 1] == ' ') {
+                    args.push_back(std::string(str + lastTokenIndex + 1, i - lastTokenIndex));
+                    lastTokenIndex = i + 2;
+                    i++;
+                }
+                else {
+                    return -1; // Cannot have a non-space character after a terminating quote
+                }
+            }
+        }
+        else if (!inQuote && str[i] == ' ') {
+            args.push_back(std::string(str + lastTokenIndex, i - lastTokenIndex));
+            lastTokenIndex = i + 1;
+        }
+    }
+    if (len > lastTokenIndex) {
+        args.push_back(std::string(str + lastTokenIndex));
+    }
+    return 0;
+}
+
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cout << "Usage: port" << std::endl;
         return -1;
     }
 
-    int port = atoi(args[1]);
+    std::map<std::string, std::string> store;
+
+    std::pair<std::string, std::function<int(std::vector<std::string>&, int, char*, size_t&)>> functions[NUM_FUNCTIONS] = {
+        {"PING", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            strcpy(buffer, "PONG");
+            length = 5;
+            return 0;
+        }},
+        {"SET", [&store](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            if (args.size() != 3) {
+                return -1;
+            }
+            std::string key = args[1];
+            std::string value = args[2];
+            store[key] = value;
+            std::string msg = key + ":" + value; 
+            strcpy(buffer, msg.c_str());
+            length = msg.size();
+            return 0;
+        }},
+        {"QUERY", [&store](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            if (args.size() != 2) {
+                return -1;
+            }
+            std::string key = args[1];
+            std::string value = store[key];
+            std::string msg = key + ":" + value;
+            strcpy(buffer, msg.c_str());
+            length = msg.size();
+            return 0;
+        }},
+        {"DELETE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            strcpy(buffer, "unimplemented");
+            length = 14;
+            return 1;
+        }},
+        {"SUBSCRIBE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            strcpy(buffer, "unimplemented");
+            length = 14;
+            return 1;
+        }},
+        {"UNSUBSCRIBE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            strcpy(buffer, "unimplemented");
+            length = 14;
+            return 1;
+        }},
+        {"UNSUBSCRIBE_ALL", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            strcpy(buffer, "unimplemented");
+            length = 14;
+            return 1;
+        }},
+    };
+
+    int port = atoi(argv[1]);
 
     char msg[MAX_BUFFER_SIZE];
     sockaddr_in serverAddress;
@@ -92,13 +180,49 @@ int main(int argc, char* args[]) {
                             fds.erase(fds.begin() + i);
                             std::cout << "Client disconected" << std::endl;
                             i--;
-                        }
-                        else if (!strcmp(msg, "PING")) {
-                            strcpy(msg, "PONG");
-                            send(fds[i].fd, msg, 5, 0);
                             continue;
                         }
-                        std::string data = "ECHO: " + std::string(msg);
+
+                        std::vector<std::string> args;
+                        if (splitArgs(msg, args) < 0) {
+                            std::cerr << "Error parsing message: " << msg << std::endl;
+                            continue;
+                        }
+
+                        if (args.size() == 0) {
+                            std::cerr << "Error: Got empty message" << std::endl;
+                            continue;
+                        }
+
+                        // for (auto& a : args) {
+                        //     std::cout << "[" << a << "]" << std::endl;
+                        // }
+
+                        bool foundFunction = false;
+
+                        for (size_t j = 0; j < NUM_FUNCTIONS; j++) {
+                            if (functions[j].first == args[0]) {
+                                char buffer[MAX_BUFFER_SIZE];
+                                memset(buffer, 0, sizeof(buffer));
+                                size_t len;
+                                if (functions[j].second(args, fds[i].fd, buffer, len) < 0) {
+                                    std::cerr << "Error occurred" << std::endl;
+                                    send(fds[i].fd, "ERROR", 6, 0);
+                                }
+                                else {
+                                    std::cout << "Sending: " << buffer << " len(" << len << ")" << std::endl;
+                                    send(fds[i].fd, buffer, len, 0);
+                                }
+                                foundFunction = true;
+                                break;
+                            }
+                        }
+
+                        if (foundFunction) {
+                            continue;
+                        }
+
+                        std::string data = "Unrecognized command: " + std::string(msg);
                         send(fds[i].fd, data.c_str(), data.length() + 1, 0);
                     }
                     else {

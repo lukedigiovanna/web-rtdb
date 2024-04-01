@@ -12,7 +12,13 @@ Use the client script provided in `/demo/client.js` to interface with the server
 
 ### Commands:
 
-* `PING`: Assuming the connection is open, the server will simply respond with `PONG`
-* `EXIT`: Used to terminate a connection
-* `SET <key> <value>`: Sets the given key to whatever value is on the right
-* `QUERY <key>`: Reports the value of the given key, if it exists.
+*Checkmark indicates that the function has been implemented*
+
+* [x] `PING`: Assuming the connection is open, the server will simply respond with `PONG`
+* [x] `EXIT`: Used to terminate a connection
+* [x] `SET <key> <value>`: Sets the given key to whatever value is on the right
+* [x] `QUERY <key>`: Reports the value of the given key, if it exists.
+* [ ] `DELETE <key>`: Deletes the given key value
+* [ ] `SUBSCRIBE <key>`: Subscribes the client to recieve broadcasted updates to the specified key
+* [ ] `UNSUBSCRIBE <key>`: Unsubscribes the client from a key's broadcast updates
+* [ ] `UNSUBSCRIBE_ALL`: Unsubscribes the client from all keys' broadcast updates

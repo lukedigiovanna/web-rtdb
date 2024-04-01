@@ -5,13 +5,13 @@ const prompt = require('prompt-sync')();
 
 
 const tcpClient = new net.Socket();
-tcpClient.connect({ port: 8080, host: "localhost" }, () => {
+tcpClient.connect({ port: 8081, host: "localhost" }, () => {
     console.log('Connected to TCP server');
     tcpClient.write("PING");
 });
 
 tcpClient.on('data', (data) => {
-    console.log('Server: ' + data);
+    console.log(`${data}`);
     const message = prompt("> ");
     tcpClient.write(message);
 });
