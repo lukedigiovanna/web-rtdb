@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include <set>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -70,6 +71,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::map<std::string, std::string> store;
+    std::map<std::string, std::set<int>> subscribers;
 
     std::pair<std::string, std::function<int(std::vector<std::string>&, int, char*, size_t&)>> functions[NUM_FUNCTIONS] = {
         {"PING", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
@@ -77,7 +79,7 @@ int main(int argc, char* argv[]) {
             length = 5;
             return 0;
         }},
-        {"SET", [&store](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+        {"SET", [&store, &subscribers](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
             if (args.size() != 3) {
                 return -1;
             }
@@ -86,7 +88,13 @@ int main(int argc, char* argv[]) {
             store[key] = value;
             std::string msg = key + ":" + value; 
             strcpy(buffer, msg.c_str());
-            length = msg.size();
+            length = msg.size() + 1;
+            for (int subscriber : subscribers[key]) {
+                std::cout << "Sending: " << buffer << " to subscriber: " << subscriber << std::endl;
+                if (sockfd != subscriber) {
+                    send(subscriber, buffer, length, 0);
+                }
+            }
             return 0;
         }},
         {"QUERY", [&store](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
@@ -97,7 +105,7 @@ int main(int argc, char* argv[]) {
             std::string value = store[key];
             std::string msg = key + ":" + value;
             strcpy(buffer, msg.c_str());
-            length = msg.size();
+            length = msg.size() + 1;
             return 0;
         }},
         {"DELETE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
@@ -105,10 +113,20 @@ int main(int argc, char* argv[]) {
             length = 14;
             return 1;
         }},
-        {"SUBSCRIBE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
-            strcpy(buffer, "unimplemented");
-            length = 14;
-            return 1;
+        {"SUBSCRIBE", [&store, &subscribers](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
+            if (args.size() != 2) {
+                return -1;
+            }
+            std::string key = args[1];
+            if (store.find(key) == store.end()) {
+                store[key] = "";
+            }
+            subscribers[key].insert(sockfd);
+            std::string value = store[key];
+            std::string msg = key + ":" + value;
+            strcpy(buffer, msg.c_str());
+            length = msg.size() + 1;
+            return 0;
         }},
         {"UNSUBSCRIBE", [](std::vector<std::string>& args, int sockfd, char* buffer, size_t& length) -> int {
             strcpy(buffer, "unimplemented");
@@ -193,10 +211,6 @@ int main(int argc, char* argv[]) {
                             std::cerr << "Error: Got empty message" << std::endl;
                             continue;
                         }
-
-                        // for (auto& a : args) {
-                        //     std::cout << "[" << a << "]" << std::endl;
-                        // }
 
                         bool foundFunction = false;
 
