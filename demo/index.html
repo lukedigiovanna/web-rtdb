@@ -6,31 +6,127 @@
         </title>
     </head>
     <body>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+        <h1>
+            RTDB Demo Client
+        </h1>
+
+        <input type="text" id="message-input" /> 
+        <button id="send-button"> Send </button>
+
+        <div class="flex-row">
+            <div>
+                <h3>
+                    Data
+                </h3>
+                <table>
+                    <thead>
+                        <th>
+                            Key
+                        </th>
+                        <th>
+                            Value
+                        </th>
+                        <th>
+                            
+                        </th>
+                        <th>
+                        
+                        </th>
+                    </thead>
+                    <tbody id="data">
+        
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3>
+                    Messages:
+                </h3>
+                <table>
+                    <thead>
+                        <th>
+                            Timestamp
+                        </th>
+                        <th>
+                            Message
+                        </th>
+                    </thead>
+                    <tbody id="messages">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        </table>
+
         <script>
-            // Create a new WebSocket.
+            // connect to websocket proxy for socket server
             const socket = new WebSocket('ws://localhost:8090');
+
+            const store = new Map();
+
+            function rerenderDataTable() {
+                $("#data").html("");
+                for (const key of store.keys()) {
+                    $("#data").append(`<tr><td>${key}</td><td>${store.get(key)}</td><td></td><td></td></tr>`)
+                }
+            }
 
             // Connection opened event listener.
             socket.addEventListener('open', function (event) {
-                console.log('Connected to the WebSocket server');
-                // Send a message to the server once the connection is opened.
-                socket.send('Hello, server!');
+                socket.send('PING');
             });
 
-            // Listen for messages from the server.
-            socket.addEventListener('message', function (event) {
-                console.log('Message from server:', event.data);
+            $("#send-button").click(() => {
+                socket.send($("#message-input").val());
             });
 
-            // Listen for possible errors.
+            socket.addEventListener('message', async function (event) {
+                const message = await event.data.text()
+                if (message.length > 0) {
+                    if (message[0] === '+') { // OK status
+                        const keyvalue = message.substring(4);
+                        const colonIndex = keyvalue.indexOf(":");
+                        const key = keyvalue.substring(0, colonIndex);
+                        const value = keyvalue.substring(colonIndex + 1);
+                        store.set(key, value);
+                        rerenderDataTable();
+                    }
+                    $("#messages").prepend(`<tr><td>${Math.round(event.timeStamp)}</td><td>${message}</td></tr>`)
+                }
+            });
+
             socket.addEventListener('error', function (event) {
                 console.error('WebSocket error:', event);
             });
 
-            // Listen for the close event.
             socket.addEventListener('close', function (event) {
                 console.log('Disconnected from the WebSocket server');
             });
         </script>
+
+        <style>
+            table {
+                border: 1px solid black;
+                margin: 5px;
+            }
+
+            h3 {
+                margin: 1px;
+            }
+            
+            th, td {
+                width: 100px;
+                border: 1px solid black;
+            }
+
+            .flex-row {
+                display: flex;
+                flex-direction: row;
+            }
+        </style>
     </body>
 </html>

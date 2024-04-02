@@ -10,6 +10,12 @@ This is an implementation of a simple realtime database using key-value stores.
 
 Use the client script provided in `/demo/client.js` to interface with the server from the command line.
 
+Alternatively, interface with an instance through the web client:
+
+1. Run the server on a port: `./build/server 8080`
+2. Run the proxy using node.js (this sets up a WebSocket that forwards requests to the regular TCP client): `node demo/proxy.js`
+3. Open `demo/index.html` and interface with the database
+
 ### Commands:
 
 *Checkmark indicates that the function has been implemented*
@@ -19,6 +25,6 @@ Use the client script provided in `/demo/client.js` to interface with the server
 * [x] `SET <key> <value>`: Sets the given key to whatever value is on the right
 * [x] `QUERY <key>`: Reports the value of the given key, if it exists.
 * [ ] `DELETE <key>`: Deletes the given key value
-* [ ] `SUBSCRIBE <key>`: Subscribes the client to recieve broadcasted updates to the specified key
+* [x] `SUBSCRIBE <key>`: Subscribes the client to recieve broadcasted updates to the specified key
 * [ ] `UNSUBSCRIBE <key>`: Unsubscribes the client from a key's broadcast updates
 * [ ] `UNSUBSCRIBE_ALL`: Unsubscribes the client from all keys' broadcast updates

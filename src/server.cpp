@@ -86,11 +86,11 @@ int main(int argc, char* argv[]) {
             std::string key = args[1];
             std::string value = args[2];
             store[key] = value;
-            std::string msg = key + ":" + value; 
+            std::string msg = "+OK " + key + ":" + value; 
             strcpy(buffer, msg.c_str());
             length = msg.size() + 1;
             for (int subscriber : subscribers[key]) {
-                std::cout << "Sending: " << buffer << " to subscriber: " << subscriber << std::endl;
+                // std::cout << "Sending: " << buffer << " to subscriber: " << subscriber << std::endl;
                 if (sockfd != subscriber) {
                     send(subscriber, buffer, length, 0);
                 }
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
             }
             std::string key = args[1];
             std::string value = store[key];
-            std::string msg = key + ":" + value;
+            std::string msg = "+OK " + key + ":" + value;
             strcpy(buffer, msg.c_str());
             length = msg.size() + 1;
             return 0;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
             }
             subscribers[key].insert(sockfd);
             std::string value = store[key];
-            std::string msg = key + ":" + value;
+            std::string msg = "+OK " + key + ":" + value;
             strcpy(buffer, msg.c_str());
             length = msg.size() + 1;
             return 0;
@@ -204,11 +204,13 @@ int main(int argc, char* argv[]) {
                         std::vector<std::string> args;
                         if (splitArgs(msg, args) < 0) {
                             std::cerr << "Error parsing message: " << msg << std::endl;
+                            send(fds[i].fd, "-ERROR error parsing command", 29, 0);
                             continue;
                         }
 
                         if (args.size() == 0) {
                             std::cerr << "Error: Got empty message" << std::endl;
+                            send(fds[i].fd, "-ERROR empty command", 22, 0);
                             continue;
                         }
 
@@ -221,7 +223,7 @@ int main(int argc, char* argv[]) {
                                 size_t len;
                                 if (functions[j].second(args, fds[i].fd, buffer, len) < 0) {
                                     std::cerr << "Error occurred" << std::endl;
-                                    send(fds[i].fd, "ERROR", 6, 0);
+                                    send(fds[i].fd, "-ERROR unknown error occurred", 30, 0);
                                 }
                                 else {
                                     std::cout << "Sending: " << buffer << " len(" << len << ")" << std::endl;
@@ -236,7 +238,7 @@ int main(int argc, char* argv[]) {
                             continue;
                         }
 
-                        std::string data = "Unrecognized command: " + std::string(msg);
+                        std::string data = "-ERROR unrecognized command: " + std::string(msg);
                         send(fds[i].fd, data.c_str(), data.length() + 1, 0);
                     }
                     else {
