@@ -1,0 +1,16 @@
+{
+  "name": "web-rtdb-client",
+  "version": "1.0.0",
+  "description": "Manages client connections and requests to a Web-RTDB server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "web",
+    "rtdb",
+    "client"
+  ],
+  "author": "Luke DiGiovanna (lukedigiovanna@gmail.com)",
+  "license": "ISC"
+}
