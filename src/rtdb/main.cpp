@@ -1,8 +1,11 @@
-#include "rtdb/rtdb_wsserver.h"
+#include "rtdb_wsserver.h"
 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+    std::cout << "Starting program" << std::endl;
+    std::cout.flush();
+
     rtdb::WSServerConfig config = {
         .port=9002
     };    

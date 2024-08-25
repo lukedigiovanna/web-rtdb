@@ -1,17 +1,25 @@
 cmake_minimum_required(VERSION 3.10)
+project(WebRTDB)
 
-# Project name and version
-project(WebRTDB VERSION 1.0)
+# Enable C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Set C++11 standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# Define the ASIO_STANDALONE and _WEBSOCKETPP_CPP11_THREAD macros
+add_definitions(-DASIO_STANDALONE)
+add_definitions(-D_WEBSOCKETPP_CPP11_THREAD_)
 
-# Include directory for dependencies
-include_directories(${PROJECT_SOURCE_DIR}/dependencies/include)
+# Include directories (adjust these paths as needed)
+include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
 
-# Specify the executable
+# Add your source files
 add_executable(WebRTDB 
-    src/main.cpp
+    src/rtdb/main.cpp 
     src/rtdb/rtdb_wsserver.cpp
 )
+
+# Link against Ws2_32.lib
+if(WIN32)
+    target_link_libraries(WebRTDB PRIVATE ws2_32)
+endif()
