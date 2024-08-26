@@ -26,11 +26,12 @@ WSServer::WSServer(WSServerConfig config) :
 }
 
 WSServer::~WSServer() {
-
+    d_server.stop();
 }
 
 void WSServer::run() {
     try {
+        d_server.start_accept();
         d_server.run();
     }
     catch (const websocketpp::exception& e) {
@@ -45,7 +46,7 @@ void WSServer::onMessage(
 }
 
 void WSServer::onClose(websocketpp::connection_hdl handle) {
-    
+
 }
 
 }

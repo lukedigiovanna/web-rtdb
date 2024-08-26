@@ -1,6 +1,9 @@
 #ifndef RTDB_WSSERVER_H
 #define RTDB_WSSERVER_H
 
+#define ASIO_STANDALONE
+#define _WEBSOCKETPP_CPP11_THREAD_
+
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/server.hpp>
 
