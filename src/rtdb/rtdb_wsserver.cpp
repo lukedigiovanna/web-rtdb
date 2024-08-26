@@ -8,7 +8,7 @@ using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
-WSServer::WSServer(unsigned short port) {
+WSServer::WSServer(unsigned short port) : port(port) {
     try {
         // Disable websocketpp logging.
         d_server.clear_access_channels(websocketpp::log::alevel::all); 
@@ -36,6 +36,9 @@ WSServer::~WSServer() {
 void WSServer::start() {
     try {
         d_server.start_accept();
+        
+        LOG_INFO << "Listening for clients on ::" << port;
+        
         d_server.run();
     }
     catch (const websocketpp::exception& e) {

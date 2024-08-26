@@ -4,8 +4,6 @@ Simple solution for developing real time web applications without the need
 of implementing a backend. Best for low throughput, persistent, realtime
 applications such as chatrooms.
 
-## Running
-
 ## Usage
 
 Web-RTDB works over a web socket connection. 
@@ -15,7 +13,13 @@ Web-RTDB works over a web socket connection.
 This project depends on `websocketpp`, a header-only library for implementing
 websockets in C++. This also requires `asio`. These dependencies should be
 placed at the root of the workspace in `dependencies/include`. Then the 
-corresponding build script in `bin` can be run to build the project.
+corresponding build script for your OS in `bin` can be ran to build the project.
+
+## Running
+
+After building the binary can be run directly on your machine. Currently there
+are no environment parameters or configuration, the program is agnostic to its
+use-case until it starts getting probed by clients.
 
 ## Client
 

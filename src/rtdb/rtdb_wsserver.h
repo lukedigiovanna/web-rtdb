@@ -20,6 +20,7 @@ public:
 
 private:
     Server d_server;
+    const unsigned short port;
     MessageCb d_messageCb;
 
     void onMessage(websocketpp::connection_hdl handle, Server::message_ptr msg);
