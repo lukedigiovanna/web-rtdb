@@ -3,6 +3,8 @@
 #include "rtdb_application.h"
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 int main(int argc, char* argv[]) {
     rtdb::AppConfig config = {
@@ -12,6 +14,13 @@ int main(int argc, char* argv[]) {
     rtdb::Application application(config);
 
     application.start();
+
+    while (true) {
+       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+       LOG_INFO << "Main thread";
+    }
+
+    application.join();
 
     return 0;
 }

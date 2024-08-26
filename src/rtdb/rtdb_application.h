@@ -3,6 +3,8 @@
 
 #include "rtdb_wsserver.h"
 
+#include <thread>
+
 namespace rtdb {
 
 struct AppConfig {
@@ -12,12 +14,23 @@ struct AppConfig {
 class Application {
 private:
     WSServer d_server;
+    std::thread d_serverThread;
+
+    bool d_running;
 
 public:
     Application(const AppConfig& config);
 
     void start();
+
+    void join();
+
+    bool running() const;
 };
+
+inline bool Application::running() const {
+    return d_running;
+}
 
 }
 

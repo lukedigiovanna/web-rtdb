@@ -29,12 +29,12 @@ class RTDBClient {
     }
 }
 
-// (async () => {
-//     const client = await RTDBClient.connect("http://localhost:9002");
+(async () => {
+    const client = await RTDBClient.connect("http://localhost:9002");
     
-//     client.send("hello");
+    client.send("hello");
 
-//     client.close();
-// })();
+    client.close();
+})();
 
 export { RTDBClient };
