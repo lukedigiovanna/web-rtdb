@@ -14,9 +14,9 @@ namespace rtdb {
 class Logger {
 public:
     enum Level {
-        INFO,
-        WARNING,
-        ERROR
+        e_INFO,
+        e_WARNING,
+        e_ERROR
     };
 
     Logger(Level level, const char* file, int line); 
@@ -35,8 +35,8 @@ private:
 };
 }
 
-#define LOG_INFO rtdb::Logger(rtdb::Logger::INFO, __FILE__, __LINE__)
-#define LOG_WARNING rtdb::Logger(rtdb::Logger::WARNING, __FILE__, __LINE__)
-#define LOG_ERROR rtdb::Logger(rtdb::Logger::ERROR, __FILE__, __LINE__)
+#define LOG_INFO rtdb::Logger(rtdb::Logger::e_INFO, __FILE__, __LINE__)
+#define LOG_WARNING rtdb::Logger(rtdb::Logger::e_WARNING, __FILE__, __LINE__)
+#define LOG_ERROR rtdb::Logger(rtdb::Logger::e_ERROR, __FILE__, __LINE__)
 
 #endif

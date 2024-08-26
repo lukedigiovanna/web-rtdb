@@ -16,9 +16,9 @@ Logger::Logger(Level level, const char* file, int line) : logLevel(level) {
 
     // Log level as string
     switch (level) {
-        case INFO: stream << "\033[32m" << "[INFO] "; break;
-        case WARNING: stream << "\033[33m" << "[WARNING] "; break;
-        case ERROR: stream << "\033[31m" << "[ERROR] "; break;
+        case e_INFO: stream << "\033[32m" << "[INFO] "; break;
+        case e_WARNING: stream << "\033[33m" << "[WARNING] "; break;
+        case e_ERROR: stream << "\033[31m" << "[ERROR] "; break;
     }
 
     // Get the file name starting from "src/"

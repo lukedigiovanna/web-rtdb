@@ -19,7 +19,5 @@ add_executable(WebRTDB
 
 # Link against Ws2_32.lib
 if(WIN32)
-    add_definitions(-DASIO_STANDALONE)
-    add_definitions(-D_WEBSOCKETPP_CPP11_THREAD_)
-    target_link_libraries(WebRTDB PRIVATE ws2_32)
+    target_link_libraries(WebRTDB PRIVATE ws2_32 Mswsock)
 endif()
