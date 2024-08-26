@@ -33,4 +33,6 @@ class RTDBClient {
     const client = await RTDBClient.connect("http://localhost:9002");
     
     client.send("hello");
+
+    client.close();
 })();

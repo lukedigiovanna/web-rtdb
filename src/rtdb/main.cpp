@@ -1,17 +1,17 @@
 #include "rtdb_wsserver.h"
+#include "rtdb_logger.h"
+#include "rtdb_application.h"
 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-    std::cout << "Starting program" << std::endl;
-    std::cout.flush();
-
-    rtdb::WSServerConfig config = {
+    rtdb::AppConfig config = {
         .port=9002
-    };    
-    rtdb::WSServer server(config);
+    }; 
 
-    server.run();
+    rtdb::Application application(config);
+
+    application.start();
 
     return 0;
 }

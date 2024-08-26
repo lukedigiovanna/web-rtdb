@@ -13,10 +13,6 @@
 
 namespace rtdb {
 
-struct WSServerConfig {
-    unsigned short port;
-};
-
 class WSServer {
 public:
     typedef std::function<void(void)> MessageCb;
@@ -25,9 +21,9 @@ public:
 private:
     Server d_server;
     MessageCb d_messageCb;
-    const WSServerConfig d_config;
 
     void onMessage(websocketpp::connection_hdl handle, Server::message_ptr msg);
+    void onOpen(websocketpp::connection_hdl handle);
     void onClose(websocketpp::connection_hdl handle);
 
 public:
@@ -35,13 +31,13 @@ public:
     WSServer() = delete;
     WSServer(const WSServer& s) = delete;
 
-    WSServer(WSServerConfig config);
+    WSServer(unsigned short port);
     ~WSServer();
 
     void setOnMessageCallback(MessageCb cb);
     
     // Starts listening to connections on the current thread.
-    void run();
+    void start();
 };
 
 }
