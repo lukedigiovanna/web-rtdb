@@ -1,6 +1,8 @@
 #ifndef RTDB_APPLICATION
 #define RTDB_APPLICATION
 
+#include "rtdb_ledger.h"
+#include "rtdb_storemanager.h"
 #include "rtdb_wsserver.h"
 
 #include <thread>
@@ -16,8 +18,10 @@ private:
     WSServer d_server;
     std::thread d_serverThread;
 
-    bool d_running;
+    StoreManager d_storeManager;
+    Ledger d_ledger;
 
+    bool d_running;
 public:
     Application(const AppConfig& config);
 

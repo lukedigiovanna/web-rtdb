@@ -14,6 +14,8 @@ add_executable(WebRTDB
     src/rtdb/main.cpp 
     src/rtdb/rtdb_application.cpp
     src/rtdb/rtdb_logger.cpp
+    src/rtdb/rtdb_store.cpp
+    src/rtdb/rtdb_utils.cpp
     src/rtdb/rtdb_wsserver.cpp
 )
 
