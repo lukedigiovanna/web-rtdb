@@ -7,7 +7,11 @@ namespace rtdb {
 
 class Message {
 private:
-    GUID guid;
+    GUID d_guid;
+    long d_createdTimestamp;
+    long d_updatedTimestamp;
+    char* d_data;
+    size_t d_dataSize;
 public:
     Message();
 };

@@ -6,6 +6,11 @@ enum RTDBMessageType {
     QUERY_STORE="QUERY"
 }
 
+interface RTDBMessage {
+    type: RTDBMessageType;
+
+}
+
 class RTDBClient {
     private socket: WebSocket;
 
@@ -31,13 +36,17 @@ class RTDBClient {
 
     // Subscribes the clients to all updates from the given storeID
     public subscribeAll(storeID: string) {
-
+        this.send(RTDBMessageType.SUBSCRIBE_ALL, storeID);
     }
 
-    private send(message: string) {
-        this.socket.send(message);
+    public send(messageType: RTDBMessageType, payload: string) {
+        this.sendRaw(`${messageType} ${payload}`);
     }
-    
+
+    public sendRaw(payload: string) {
+        this.socket.send(payload);
+    }
+
     public close() {
         this.socket.close()
     }
