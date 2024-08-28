@@ -15,11 +15,6 @@ int main(int argc, char* argv[]) {
 
     application.start();
 
-    while (true) {
-       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-       LOG_INFO << "Main thread";
-    }
-
     application.join();
 
     return 0;

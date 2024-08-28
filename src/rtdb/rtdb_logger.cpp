@@ -22,7 +22,7 @@ Logger::Logger(Level level, const char* file, int line) : logLevel(level) {
     }
 
     // Get the file name starting from "src/"
-    const char* src_position = std::strstr(file, "src/");
+    const char* src_position = std::strstr(file, "src");
     if (src_position) {
         stream << src_position << ":" << line << " ";
     } else {

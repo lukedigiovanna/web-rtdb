@@ -1,5 +1,7 @@
 import { RawData, WebSocket } from "ws";
 
+const prompt = require('prompt-sync')();
+
 enum RTDBMessageType {
     SUBSCRIBE_ALL="SUBSCRIBE_ALL",
     PUSH_MESSAGE="PUSH",
@@ -54,8 +56,14 @@ class RTDBClient {
 
 (async () => {
     const client = await RTDBClient.connect("http://localhost:9002");
-    
-    client.subscribeAll("chats")
+
+    while (true) {
+        const entry = prompt("> ");
+        if (entry === "exit") {
+            break;
+        }
+        client.sendRaw(entry);
+    }
 
     client.close();
 })();

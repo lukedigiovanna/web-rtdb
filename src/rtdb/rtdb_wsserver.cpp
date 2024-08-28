@@ -1,6 +1,7 @@
 #include "rtdb_wsserver.h"
 
 #include "rtdb_logger.h"
+#include "rtdb_command.h"
 
 namespace rtdb {
 
@@ -50,7 +51,12 @@ void WSServer::onMessage(
     websocketpp::connection_hdl handle, 
     Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
-    LOG_WARNING << "onMessage not implemented.";
+    try {
+        Command command(msg->get_payload());
+    }
+    catch (CommandParseError& err) {
+        LOG_ERROR << err.what();
+    }
 }
 
 void WSServer::onOpen(websocketpp::connection_hdl handle) {

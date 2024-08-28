@@ -1,0 +1,13 @@
+-- raw commands -- 
+
+-- Subscribe operations
+SUBSCRIBE_ALL store=""
+SUBSCRIBE store=""
+
+-- Write operations
+PUSH store=""
+UPDATE store=""
+DELETE store="" guid=""
+
+-- Query operations
+QUERY store="" guid="" fromtime="" totime=""
