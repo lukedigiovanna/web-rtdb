@@ -2,12 +2,10 @@
 
 namespace rtdb {
 
-Store::Store(const Ledger& ledger) : d_ledger(ledger) {
+Store::Store(const Ledger &ledger) : d_ledger(ledger) {
     // d_uid = Utils::genUID();
 }
 
-Store::~Store() {
+Store::~Store() {}
 
-}
-
-}
+} // namespace rtdb

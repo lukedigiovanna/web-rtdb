@@ -3,8 +3,6 @@
 
 // Used to record every write to the database.
 // This includes every write to
-class Ledger {
-
-};
+class Ledger {};
 
 #endif

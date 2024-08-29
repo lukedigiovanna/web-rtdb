@@ -1,18 +1,18 @@
 #include "rtdb_wsserver.h"
 
-#include "rtdb_logger.h"
 #include "rtdb_command.h"
+#include "rtdb_logger.h"
 
 namespace rtdb {
 
+using websocketpp::lib::bind;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
-using websocketpp::lib::bind;
 
 WSServer::WSServer(unsigned short port) : port(port) {
     try {
         // Disable websocketpp logging.
-        d_server.clear_access_channels(websocketpp::log::alevel::all); 
+        d_server.clear_access_channels(websocketpp::log::alevel::all);
 
         d_server.init_asio();
         d_server.set_reuse_addr(true);
@@ -22,8 +22,7 @@ WSServer::WSServer(unsigned short port) : port(port) {
         d_server.set_open_handler(bind(&WSServer::onOpen, this, _1));
 
         d_server.listen(port);
-    }
-    catch (const websocketpp::exception& e) {
+    } catch (const websocketpp::exception &e) {
         LOG_ERROR << e.what();
     }
 }
@@ -37,25 +36,32 @@ WSServer::~WSServer() {
 void WSServer::start() {
     try {
         d_server.start_accept();
-        
+
         LOG_INFO << "Listening for clients on ::" << port;
-        
+
         d_server.run();
-    }
-    catch (const websocketpp::exception& e) {
+    } catch (const websocketpp::exception &e) {
         LOG_ERROR << e.what();
     }
 }
 
-void WSServer::onMessage(
-    websocketpp::connection_hdl handle, 
-    Server::message_ptr msg) {
+void WSServer::onMessage(websocketpp::connection_hdl handle,
+                         Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
-    try {
-        Command command(msg->get_payload());
-    }
-    catch (CommandParseError& err) {
-        LOG_ERROR << err.what();
+    if (d_messageCb) {
+        // TODO enqueue command to an execution threadpool.
+        try {
+            auto connection = d_server.get_con_from_hdl(handle);
+            Command command(msg->get_payload());
+            d_messageCb(connection, command);
+        } catch (CommandParseError &err) {
+            LOG_ERROR << err.what();
+        } catch (websocketpp::exception &err) {
+            LOG_ERROR << err.what();
+        }
+    } else {
+        LOG_WARN << "WebSocket server received a message but no message "
+                    "callback is set";
     }
 }
 
@@ -69,4 +75,4 @@ void WSServer::onClose(websocketpp::connection_hdl handle) {
     LOG_INFO << "Client disconnected: " << conn->get_uri();
 }
 
-}
+} // namespace rtdb

@@ -10,18 +10,20 @@ namespace rtdb {
 
 // Manages the creation and all store instances
 class StoreManager {
-public:
+  public:
     typedef std::unique_ptr<Store> StorePtr;
-private:
+
+  private:
     Ledger d_ledger;
     std::unordered_map<std::string, StorePtr> d_stores;
-public:
+
+  public:
     StoreManager();
 
     StorePtr createStore(std::string id);
     StorePtr getStore(std::string id);
 };
 
-}
+} // namespace rtdb
 
 #endif

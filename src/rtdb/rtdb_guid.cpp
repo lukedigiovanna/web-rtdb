@@ -10,14 +10,12 @@ GUID::GUID() {
     }
 }
 
-GUID::GUID(const GUID& guid) {
+GUID::GUID(const GUID &guid) {
     for (int i = 0; i < GUID_LENGTH; i++) {
         d_val[i] = guid.d_val[i];
     }
 }
 
-GUID::~GUID() {
-    
-}
+GUID::~GUID() {}
 
-}
+} // namespace rtdb

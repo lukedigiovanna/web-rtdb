@@ -14,11 +14,13 @@
 namespace rtdb {
 
 class WSServer {
-public:
-    typedef std::function<void(void)> MessageCb;
+  public:
+    typedef std::function<void(std::shared_ptr<websocketpp::connection>,
+                               Command)>
+        MessageCb;
     typedef websocketpp::server<websocketpp::config::asio> Server;
 
-private:
+  private:
     Server d_server;
     const unsigned short port;
     MessageCb d_messageCb;
@@ -27,20 +29,20 @@ private:
     void onOpen(websocketpp::connection_hdl handle);
     void onClose(websocketpp::connection_hdl handle);
 
-public:
+  public:
     // Disable the default and copy constructor
     WSServer() = delete;
-    WSServer(const WSServer& s) = delete;
+    WSServer(const WSServer &s) = delete;
 
     WSServer(unsigned short port);
     ~WSServer();
 
     void setOnMessageCallback(MessageCb cb);
-    
+
     // Starts listening to connections on the current thread.
     void start();
 };
 
-}
+} // namespace rtdb
 
 #endif

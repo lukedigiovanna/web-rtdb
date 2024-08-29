@@ -4,12 +4,8 @@
 
 namespace rtdb {
 
-
-Application::Application(const AppConfig& config) : 
-    d_server(config.port),
-    d_running(false) {
-
-}
+Application::Application(const AppConfig &config)
+    : d_server(config.port), d_running(false) {}
 
 void Application::start() {
     LOG_INFO << "Starting application";
@@ -28,4 +24,4 @@ void Application::join() {
     d_running = false;
 }
 
-}
+} // namespace rtdb

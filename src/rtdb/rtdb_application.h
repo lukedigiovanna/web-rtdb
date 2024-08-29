@@ -1,6 +1,7 @@
 #ifndef RTDB_APPLICATION
 #define RTDB_APPLICATION
 
+#include "rtdb_command.h"
 #include "rtdb_ledger.h"
 #include "rtdb_storemanager.h"
 #include "rtdb_wsserver.h"
@@ -14,7 +15,7 @@ struct AppConfig {
 };
 
 class Application {
-private:
+  private:
     WSServer d_server;
     std::thread d_serverThread;
 
@@ -22,20 +23,20 @@ private:
     Ledger d_ledger;
 
     bool d_running;
-public:
-    Application(const AppConfig& config);
+
+  public:
+    Application(const AppConfig &config);
+
+    void onMessage(const Command &command);
 
     void start();
-
     void join();
 
     bool running() const;
 };
 
-inline bool Application::running() const {
-    return d_running;
-}
+inline bool Application::running() const { return d_running; }
 
-}
+} // namespace rtdb
 
 #endif

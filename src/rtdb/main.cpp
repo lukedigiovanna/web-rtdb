@@ -1,15 +1,13 @@
-#include "rtdb_wsserver.h"
-#include "rtdb_logger.h"
 #include "rtdb_application.h"
+#include "rtdb_logger.h"
+#include "rtdb_wsserver.h"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
-int main(int argc, char* argv[]) {
-    rtdb::AppConfig config = {
-        .port=9002
-    }; 
+int main(int argc, char *argv[]) {
+    rtdb::AppConfig config = {.port = 9002};
 
     rtdb::Application application(config);
 

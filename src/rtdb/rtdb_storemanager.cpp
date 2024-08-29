@@ -2,8 +2,6 @@
 
 namespace rtdb {
 
-StoreManager::StoreManager() {
-    
-}
+StoreManager::StoreManager() {}
 
-}
+} // namespace rtdb
