@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(WebRTDB)
 
-# Enable C++11
-set(CMAKE_CXX_STANDARD 11)
+# Enable C++20
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -16,6 +16,7 @@ add_executable(WebRTDB
     src/rtdb/rtdb_command.cpp
     src/rtdb/rtdb_logger.cpp
     src/rtdb/rtdb_ledger.cpp
+    src/rtdb/rtdb_value.cpp
     src/rtdb/rtdb_store.cpp
     src/rtdb/rtdb_storemanager.cpp
     src/rtdb/rtdb_wsserver.cpp

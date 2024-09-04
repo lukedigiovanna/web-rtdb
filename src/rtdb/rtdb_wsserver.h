@@ -8,17 +8,17 @@
 #include <websocketpp/server.hpp>
 
 #include <functional>
-
 #include <iostream>
+
+#include "rtdb_command.h"
 
 namespace rtdb {
 
 class WSServer {
   public:
-    typedef std::function<void(std::shared_ptr<websocketpp::connection>,
-                               Command)>
-        MessageCb;
-    typedef websocketpp::server<websocketpp::config::asio> Server;
+    using ConnectionSp = std::shared_ptr<websocketpp::connection<websocketpp::config::asio>>;
+    using MessageCb = std::function<void(ConnectionSp, const Command&)>;
+    using Server = websocketpp::server<websocketpp::config::asio>;
 
   private:
     Server d_server;

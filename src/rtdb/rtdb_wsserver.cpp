@@ -45,6 +45,10 @@ void WSServer::start() {
     }
 }
 
+void WSServer::setOnMessageCallback(MessageCb cb) {
+    d_messageCb = cb;
+}
+
 void WSServer::onMessage(websocketpp::connection_hdl handle,
                          Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
@@ -60,7 +64,7 @@ void WSServer::onMessage(websocketpp::connection_hdl handle,
             LOG_ERROR << err.what();
         }
     } else {
-        LOG_WARN << "WebSocket server received a message but no message "
+        LOG_WARNING << "WebSocket server received a message but no message "
                     "callback is set";
     }
 }

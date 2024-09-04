@@ -2,6 +2,7 @@
 #define RTDB_MESSAGE_H
 
 #include "rtdb_guid.h"
+#include "rtdb_value.h"
 
 namespace rtdb {
 
@@ -10,7 +11,7 @@ class Message {
     GUID d_guid;
     long d_createdTimestamp;
     long d_updatedTimestamp;
-    char *d_data;
+    Value d_value;
     size_t d_dataSize;
 
   public:

@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "rtdb_value.h"
+
 namespace rtdb {
 
 struct CommandParseError : public std::runtime_error {
@@ -18,20 +20,10 @@ struct CommandParseError : public std::runtime_error {
 // Parsing helpers
 
 enum CommandTokenType {
-    e_OPERATION,
-    e_IDENTIFER,
-    e_EQUALS,
-    e_STRING_LITERAL,
-    e_INT_LITERAL,
-    e_FLOAT_LITERAL,
-};
-
-enum CommandKeyValueType {
-    e_OPTIONAL = 1 << 0,
-    e_FLOAT = 1 << 1,
-    e_INT = 1 << 2,
-    e_STRING = 1 << 3,
-    e_JSON = 1 << 4,
+    e_TOK_OPERATION,
+    e_TOK_IDENTIFER,
+    e_TOK_EQUALS,
+    e_TOK_VALUE,
 };
 
 enum CommandOperation {
@@ -43,7 +35,7 @@ enum CommandOperation {
     e_UPDATE
 };
 
-typedef std::map<std::string, CommandOperation> CommandOperationStringMap;
+using CommandOperationStringMap = std::map<std::string, CommandOperation>;
 static CommandOperationStringMap commandOperationStrings = {
     {"subscribe_all", e_SUBSCRIBE_ALL},
     {"subscribe", e_SUBSCRIBE},
@@ -53,8 +45,7 @@ static CommandOperationStringMap commandOperationStrings = {
     {"update", e_UPDATE},
 };
 
-typedef std::map<CommandOperation, std::map<std::string, int>>
-    CommandConfigStore;
+using CommandConfigStore = std::map<CommandOperation, std::map<std::string, ValueType>>;
 static CommandConfigStore commandOperationKws = {
     {e_SUBSCRIBE_ALL,
      {
@@ -68,8 +59,8 @@ static CommandConfigStore commandOperationKws = {
     {e_PUSH,
      {
          {"storeId", e_STRING},
-         {"ttl", e_OPTIONAL | e_FLOAT | e_INT},
-         {"payload", e_JSON},
+         {"ttl", e_INT},
+         {"payload", e_JSON_OBJECT},
      }},
     {e_QUERY,
      {
@@ -101,11 +92,15 @@ struct CommandKeyValue {
 
 struct CommandToken {
     CommandTokenType type;
-    std::string value;
+    std::string content;
+    Value value; // Should only be populated if type is e_TOK_VALUE.
+
+    CommandToken(CommandTokenType type, const std::string& content);
+    CommandToken(const Value& value);
 };
 
-typedef std::vector<CommandToken> CommandTokenVector;
-typedef std::unordered_map<std::string, CommandKeyValue> CommandKV;
+using CommandTokenVector = std::vector<CommandToken>;
+using CommandKV = std::unordered_map<std::string, CommandKeyValue>;
 
 class Command {
   private:
