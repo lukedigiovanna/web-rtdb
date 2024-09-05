@@ -43,7 +43,7 @@ using scit = std::string::const_iterator;
 // outputs the content to the given stringstream, `ss`.
 void advanceWord(scit &it, const scit &end, std::stringstream &ss) {
     while (isAlphaOrUnderscore(*it) && it != end) {
-        ss << tolower(*it);
+        ss << static_cast<char>(tolower(*it));
         it++;
     }
 }
@@ -66,6 +66,7 @@ CommandTokenVector tokenize(std::string commandString) {
             scit vit = it;
             Value value = Value::parse(vit, end);
             // if got here then it succeeded.
+            it = vit;
             tokens.emplace_back(value);
             utils::advanceWhiteSpace(it, commandString.end());
             continue;
