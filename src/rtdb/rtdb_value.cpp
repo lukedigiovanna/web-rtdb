@@ -34,6 +34,27 @@ Value::Value(const Value::JsonArray& jsonArrayVal) : d_type(e_JSON_ARRAY), d_val
 
 }
 
+std::string Value::str() const {
+    switch (d_type) {
+    case e_FLOAT:
+        return std::to_string(asFloat());
+    case e_INT:
+        return std::to_string(asInt());
+    case e_STRING:
+        return asString();
+    case e_NULL:
+        return "null";
+    case e_JSON_OBJECT:
+        // reconstruct compact JSON string
+        return "";
+    case e_JSON_ARRAY:
+        // reconstruct compact JSON array
+        return "";
+    default:
+        return "";
+    }
+}
+
 // Helper functions
 
 using scit = std::string::const_iterator;

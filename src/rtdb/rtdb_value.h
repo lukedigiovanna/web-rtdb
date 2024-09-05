@@ -55,8 +55,10 @@ class Value {
     Value(const JsonArray& jsonArrayVal);
 
     // Accessors
-
+    
     ValueType type() const;
+    // Gets a string representation of whatever value is stored in this object.
+    std::string str() const;
 
     int asInt() const;
     float asFloat() const;
@@ -65,6 +67,7 @@ class Value {
     const JsonArray& asJsonArray() const;
     
     bool isNull() const;
+
 
 };
 

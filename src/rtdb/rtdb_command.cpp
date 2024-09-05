@@ -78,6 +78,7 @@ CommandTokenVector tokenize(std::string commandString) {
         
         if (isAlphaOrUnderscore(c)) {
             advanceWord(it, end, ss);
+            
             // if (std::find(commandOperationStrings.begin(),
             //             commandOperationStrings.end(),
             //             ss.str()) != commandOperationStrings.end()) {
@@ -115,7 +116,7 @@ void Command::parse() {
 
     for (const auto &tok : tokens) {
         if (tok.type == e_TOK_VALUE) {
-            std::cout << "value type: " << tok.value.type() << std::endl;
+            std::cout << tok.type << ": " << tok.value.str() << std::endl;
         }
         else {
             std::cout << tok.type << ": " << tok.content << std::endl;
