@@ -45,20 +45,21 @@ static CommandOperationStringMap commandOperationStrings = {
     {"update", e_UPDATE},
 };
 
-using CommandConfigStore = std::map<CommandOperation, std::map<std::string, ValueType>>;
-static CommandConfigStore commandOperationKws = {
+using CommandConfigParams = std::map<std::string, ValueType>;
+using CommandConfigStore = std::map<CommandOperation, CommandConfigParams>;
+static CommandConfigStore commandOperationConfig = {
     {e_SUBSCRIBE_ALL,
      {
-         {"storeId", e_STRING},
+         {"storeid", e_STRING},
      }},
     {e_SUBSCRIBE,
      {
-         {"storeId", e_STRING},
-         {"msgId", e_STRING},
+         {"storeid", e_STRING},
+         {"msgid", e_STRING},
      }},
     {e_PUSH,
      {
-         {"storeId", e_STRING},
+         {"storeid", e_STRING},
          {"ttl", e_INT},
          {"payload", e_JSON_OBJECT},
      }},
@@ -76,31 +77,17 @@ static CommandConfigStore commandOperationKws = {
      }},
 };
 
-struct CommandKeyValue {
-  private:
-    float d_floatValue;
-    long d_longValue;
-    std::string d_strValue;
-
-  public:
-    CommandKeyValue();
-
-    const float floatVal() const;
-    const long longVal() const;
-    const std::string stringVal() const;
-};
-
 struct CommandToken {
     CommandTokenType type;
     std::string content;
     Value value; // Should only be populated if type is e_TOK_VALUE.
 
-    CommandToken(CommandTokenType type, const std::string& content);
-    CommandToken(const Value& value);
+    CommandToken(CommandTokenType type, const std::string &content);
+    CommandToken(const Value &value);
 };
 
 using CommandTokenVector = std::vector<CommandToken>;
-using CommandKV = std::unordered_map<std::string, CommandKeyValue>;
+using CommandKV = std::unordered_map<std::string, Value>;
 
 class Command {
   private:

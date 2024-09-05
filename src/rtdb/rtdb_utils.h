@@ -6,17 +6,16 @@
 namespace rtdb {
 namespace utils {
 
-inline bool isWhiteSpace(char c) { 
-    return c == ' ' || c == '\t' || c == '\n';
-}
+inline bool isWhiteSpace(char c) { return c == ' ' || c == '\t' || c == '\n'; }
 
-inline void advanceWhiteSpace(std::string::const_iterator &it, const std::string::const_iterator &end) {
+inline void advanceWhiteSpace(std::string::const_iterator &it,
+                              const std::string::const_iterator &end) {
     while (isWhiteSpace(*it) && it != end) {
         it++;
     }
 }
-   
-}
-}
+
+} // namespace utils
+} // namespace rtdb
 
 #endif

@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <iterator>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <stdio.h>
 
@@ -14,16 +14,11 @@ namespace rtdb {
 CommandParseError::CommandParseError(std::string msg)
     : std::runtime_error(msg) {}
 
-CommandToken::CommandToken(CommandTokenType type, const std::string& content) :
-    type(type), content(content) {
+CommandToken::CommandToken(CommandTokenType type, const std::string &content)
+    : type(type), content(content) {}
 
-}
-
-CommandToken::CommandToken(const Value& value) :
-    type(e_TOK_VALUE), value(value) {
-
-}
-
+CommandToken::CommandToken(const Value &value)
+    : type(e_TOK_VALUE), value(value) {}
 
 Command::Command(const std::string &commandString)
     : d_commandString(commandString) {
@@ -58,7 +53,7 @@ CommandTokenVector tokenize(std::string commandString) {
     while (it != end) {
         std::stringstream ss;
         CommandTokenType tokType;
-        
+
         char c = *it;
 
         // First try to interpret as a value.
@@ -70,23 +65,20 @@ CommandTokenVector tokenize(std::string commandString) {
             tokens.emplace_back(value);
             utils::advanceWhiteSpace(it, commandString.end());
             continue;
+        } catch (const ValueParseError &e) {
         }
-        catch (const ValueParseError& e) {}
 
         // If we didn't properly parse as a value, then try special cases:
         // operation, equal sign, or identifier.
-        
+
         if (isAlphaOrUnderscore(c)) {
             advanceWord(it, end, ss);
-            
-            // if (std::find(commandOperationStrings.begin(),
-            //             commandOperationStrings.end(),
-            //             ss.str()) != commandOperationStrings.end()) {
-            //     tokType = e_TOK_OPERATION;
-            // } else {
-            //     tokType = e_TOK_IDENTIFER;
-            // }
-            tokType = e_TOK_IDENTIFER;
+            if (commandOperationStrings.find(ss.str()) !=
+                commandOperationStrings.end()) {
+                tokType = e_TOK_OPERATION;
+            } else {
+                tokType = e_TOK_IDENTIFER;
+            }
         } else if (c == '=') {
             ss << c;
             it++;
@@ -95,7 +87,7 @@ CommandTokenVector tokenize(std::string commandString) {
             throw CommandParseError("Unexpected character while tokenizing: " +
                                     std::string{c});
         }
-        
+
         tokens.emplace_back(tokType, ss.str());
         utils::advanceWhiteSpace(it, commandString.end());
     }
@@ -110,17 +102,60 @@ void Command::parse() {
         throw CommandParseError("No tokens found while parsing command");
     }
 
-    // if (tokens[0].type != e_TOK_OPERATION) {
-    //     throw CommandParseError("First token in command must be an operation");
-    // }
+    if (tokens[0].type != e_TOK_OPERATION) {
+        throw CommandParseError("First token in command must be an operation");
+    }
 
-    for (const auto &tok : tokens) {
-        if (tok.type == e_TOK_VALUE) {
-            std::cout << tok.type << ": " << tok.value.str() << std::endl;
+    std::string &operationName = tokens[0].content;
+
+    auto operationPair = commandOperationStrings.find(operationName);
+    // Tokenization should guarantee the content of a TOK_OPERATION is valid
+    assert(operationPair != commandOperationStrings.end());
+
+    CommandOperation operation = operationPair->second;
+
+    CommandConfigParams &params = commandOperationConfig[operation];
+
+    for (int i = 1; i < tokens.size(); i++) {
+        // Expect identifer, then equals, then value
+        if (tokens[i].type != e_TOK_IDENTIFER) {
+            throw CommandParseError("Expected identifer token");
         }
-        else {
-            std::cout << tok.type << ": " << tok.content << std::endl;
+
+        std::string &identifier = tokens[i].content;
+        auto identifierPair = params.find(identifier);
+        if (identifierPair == params.end()) {
+            throw CommandParseError("Unrecognized parameter for \'" +
+                                    tokens[0].content + "\': " + identifier);
         }
+
+        i++;
+        if (i >= tokens.size()) {
+            throw CommandParseError("Expected equal sign after identifier");
+        }
+
+        if (tokens[i].type != e_TOK_EQUALS) {
+            throw CommandParseError(
+                "Unexpected token after identifer. Expected equal sign");
+        }
+
+        i++;
+        if (i >= tokens.size()) {
+            throw CommandParseError("Expected value after equal sign");
+        }
+
+        if (tokens[i].type != e_TOK_VALUE) {
+            throw CommandParseError(
+                "Unexpected token after identifier. Expected value");
+        }
+
+        Value &val = tokens[i].value;
+        if (val.type() != identifierPair->second) {
+            throw CommandParseError("Expected different type for parameter \'" +
+                                    identifier + "\'");
+        }
+
+        d_kv[identifier] = val;
     }
 }
 

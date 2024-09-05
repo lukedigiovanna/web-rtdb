@@ -16,8 +16,9 @@ namespace rtdb {
 
 class WSServer {
   public:
-    using ConnectionSp = std::shared_ptr<websocketpp::connection<websocketpp::config::asio>>;
-    using MessageCb = std::function<void(ConnectionSp, const Command&)>;
+    using ConnectionSp =
+        std::shared_ptr<websocketpp::connection<websocketpp::config::asio>>;
+    using MessageCb = std::function<void(ConnectionSp, const Command &)>;
     using Server = websocketpp::server<websocketpp::config::asio>;
 
   private:

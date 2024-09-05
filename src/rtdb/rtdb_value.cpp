@@ -7,32 +7,22 @@
 
 namespace rtdb {
 
-ValueParseError::ValueParseError(std::string msg)
-    : std::runtime_error(msg) {}
+ValueParseError::ValueParseError(std::string msg) : std::runtime_error(msg) {}
 
-Value::Value() : d_type(e_NULL) {
+Value::Value() : d_type(e_NULL) {}
 
-}
+Value::Value(int intVal) : d_type(e_INT), d_value(intVal) {}
 
-Value::Value(int intVal) : d_type(e_INT), d_value(intVal) {
+Value::Value(float floatVal) : d_type(e_FLOAT), d_value(floatVal) {}
 
-}
+Value::Value(const std::string &stringVal)
+    : d_type(e_STRING), d_value(stringVal) {}
 
-Value::Value(float floatVal) : d_type(e_FLOAT), d_value(floatVal) {
+Value::Value(const Value::JsonObject &jsonObjVal)
+    : d_type(e_JSON_OBJECT), d_value(jsonObjVal) {}
 
-}
-
-Value::Value(const std::string& stringVal) : d_type(e_STRING), d_value(stringVal) {
-
-}
-
-Value::Value(const Value::JsonObject& jsonObjVal) : d_type(e_JSON_OBJECT), d_value(jsonObjVal) {
-
-}
-
-Value::Value(const Value::JsonArray& jsonArrayVal) : d_type(e_JSON_ARRAY), d_value(jsonArrayVal) {
-
-}
+Value::Value(const Value::JsonArray &jsonArrayVal)
+    : d_type(e_JSON_ARRAY), d_value(jsonArrayVal) {}
 
 std::string Value::str() const {
     switch (d_type) {
@@ -67,7 +57,7 @@ std::unordered_map<char, char> escChars = {
 // Advances the given iterator until the end of the string (1 char after the
 // final quote). Will throw an error if it reaches the end of the string
 // without encountering a closing quotation.
-void parseString(scit& it, const scit& end, std::stringstream& ss) {
+void parseString(scit &it, const scit &end, std::stringstream &ss) {
     LOG_WARNING << "Starting parseString";
     assert(*it == '\"');
     it++;
@@ -103,17 +93,15 @@ void parseString(scit& it, const scit& end, std::stringstream& ss) {
     LOG_WARNING << "Finished parseString";
 }
 
-ValueType parseNumeric(scit& it, const scit& strEnd, std::stringstream& ss) {
+ValueType parseNumeric(scit &it, const scit &strEnd, std::stringstream &ss) {
     bool foundDecimalPoint = false;
     while (it != strEnd) {
         if (isdigit(*it)) {
             ss << *it;
-        } 
-        else if (*it == '.' && !foundDecimalPoint) {
+        } else if (*it == '.' && !foundDecimalPoint) {
             ss << *it;
             foundDecimalPoint = true;
-        }
-        else {
+        } else {
             break;
         }
         it++;
@@ -123,7 +111,7 @@ ValueType parseNumeric(scit& it, const scit& strEnd, std::stringstream& ss) {
 
 // Simply checks the iterator matches "null" and iterates the given
 // iterator past null. If this is not a match, then an error is thrown.
-void parseNull(scit& it, const scit& strEnd) {
+void parseNull(scit &it, const scit &strEnd) {
     // Check if there is an exact match to "null".
     const std::string null = "null";
     for (const auto c : null) {
@@ -134,47 +122,38 @@ void parseNull(scit& it, const scit& strEnd) {
     }
 }
 
-void parseJsonObject(scit& it, const scit& strEnd) {
+void parseJsonObject(scit &it, const scit &strEnd) {}
 
-}
+void parseJsonArray(scit &it, const scit &strEnd) {}
 
-void parseJsonArray(scit& it, const scit& strEnd) {
-
-}
-
-Value Value::parse(scit& it, const scit& strEnd) {
+Value Value::parse(scit &it, const scit &strEnd) {
     if (*it == '\"') {
         std::stringstream ss;
         parseString(it, strEnd, ss);
         return Value(ss.str());
-    }
-    else if (isdigit(*it)) {
+    } else if (isdigit(*it)) {
         std::stringstream ss;
         ValueType type = parseNumeric(it, strEnd, ss);
         if (type == e_INT) {
             int v;
             ss >> v;
             return Value(v);
-        }
-        else { // type == e_FLOAT
+        } else { // type == e_FLOAT
             float f;
             ss >> f;
             return Value(f);
         }
-    }
-    else if (*it == '{') {
+    } else if (*it == '{') {
         // Parse JSON object
-    }
-    else if (*it == '[') {
+    } else if (*it == '[') {
         // Parse JSON array
-    }
-    else if (*it == 'n') {
+    } else if (*it == 'n') {
         parseNull(it, strEnd);
         return Value();
-    }
-    else {
-        throw ValueParseError("Unexpected token while parsing value: " + std::string(1, *it));
+    } else {
+        throw ValueParseError("Unexpected token while parsing value: " +
+                              std::string(1, *it));
     }
 }
 
-}
+} // namespace rtdb

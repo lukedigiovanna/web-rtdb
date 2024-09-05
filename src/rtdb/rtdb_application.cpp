@@ -7,9 +7,10 @@ namespace rtdb {
 
 Application::Application(const AppConfig &config)
     : d_server(config.port), d_running(false) {
-    d_server.setOnMessageCallback([&](WSServer::ConnectionSp conn, const Command& command){
-        std::cout << "cb from application.\n";
-    });
+    d_server.setOnMessageCallback(
+        [&](WSServer::ConnectionSp conn, const Command &command) {
+            std::cout << "cb from application.\n";
+        });
 }
 
 void Application::start() {
