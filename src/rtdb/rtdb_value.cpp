@@ -58,7 +58,6 @@ std::unordered_map<char, char> escChars = {
 // final quote). Will throw an error if it reaches the end of the string
 // without encountering a closing quotation.
 void parseString(scit &it, const scit &end, std::stringstream &ss) {
-    LOG_WARNING << "Starting parseString";
     assert(*it == '\"');
     it++;
     while (*it != '\"') {
@@ -90,7 +89,6 @@ void parseString(scit &it, const scit &end, std::stringstream &ss) {
         it++;
     }
     it++; // Go one past the quotation
-    LOG_WARNING << "Finished parseString";
 }
 
 ValueType parseNumeric(scit &it, const scit &strEnd, std::stringstream &ss) {

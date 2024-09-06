@@ -2,8 +2,8 @@
 
 namespace rtdb {
 
-Store::Store(const Ledger &ledger) : d_ledger(ledger) {
-    // d_uid = Utils::genUID();
+Store::Store(const Ledger &ledger, std::string uid) : d_ledger(ledger), d_uid(uid) {
+
 }
 
 Store::~Store() {}

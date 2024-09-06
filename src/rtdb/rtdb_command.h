@@ -87,14 +87,14 @@ struct CommandToken {
 };
 
 using CommandTokenVector = std::vector<CommandToken>;
-using CommandKV = std::unordered_map<std::string, Value>;
+using CommandParams = std::unordered_map<std::string, Value>;
 
 class Command {
   private:
     const std::string &d_commandString;
 
     CommandOperation d_operation;
-    CommandKV d_kv;
+    CommandParams d_kv;
 
   public:
     Command(const std::string &commandString);
@@ -107,7 +107,30 @@ class Command {
     // Called internally by the constructor
     // Parses the commandString
     void parse();
+  
+  public:
+    // Accessors
+
+    CommandOperation operation() const;
+    const Value& getParameter(const std::string& parameterName) const;
+    const std::string& str() const;
 };
+
+inline CommandOperation Command::operation() const {
+    return d_operation;
+}
+
+inline const Value& Command::getParameter(const std::string& parameterName) const {
+    auto f = d_kv.find(parameterName);
+    if (f == d_kv.end()) {
+        throw std::runtime_error("Parameter \'" + parameterName + "\' does not exist on this command.");
+    }
+    return f->second;
+} 
+
+inline const std::string& Command::str() const {
+    return d_commandString;
+}
 
 } // namespace rtdb
 

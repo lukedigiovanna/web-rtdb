@@ -51,7 +51,6 @@ void WSServer::onMessage(websocketpp::connection_hdl handle,
                          Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
     if (d_messageCb) {
-        // TODO enqueue command to an execution threadpool.
         try {
             auto connection = d_server.get_con_from_hdl(handle);
             Command command(msg->get_payload());

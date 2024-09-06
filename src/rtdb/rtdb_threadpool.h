@@ -12,7 +12,7 @@ namespace rtdb {
 // Implements a basic work-sharing based thread pool.
 class ThreadPool {
   public:
-    typedef std::function<void(void)> Job;
+    using Job = std::function<void(void)>;
 
   protected:
     std::vector<std::thread> d_workers;
