@@ -19,38 +19,45 @@ namespace rtdb {
 // A store is specialized data structure for storing messages in a time-ordered
 // series. It enables efficient lookups of alive messages and pruning of dead
 // messages. It also enables efficient lookups and modifications to messages
-// by id. 
+// by id. All operations on a store are thread safe.
 class Store {
   private:
     struct DLLNode {
-      DLLNode* prev;
-      DLLNode* next;
-      Message message;
+      std::shared_ptr<DLLNode> prev;
+      std::shared_ptr<DLLNode> next;
+      std::unique_ptr<Message> message;
 
+      DLLNode();
       DLLNode(Value& val);
+      
       DLLNode(const DLLNode&) = delete;
     };
   private:
     // identifer
     std::string d_uid;
 
-    DLLNode* headNode;
-    DLLNode* tailNode;
+    std::shared_ptr<DLLNode> headNode;
+    std::shared_ptr<DLLNode> tailNode;
 
-    std::unordered_map<std::string, DLLNode*> d_idToNode;
+    std::unordered_map<GUID, std::shared_ptr<DLLNode>> d_idToNode;
     std::set<WSServer::ConnectionSp> d_subscribers;
-    std::mutex d_lock;
+    // Used for locking when accessing/modifying data.
+    std::mutex d_dataLock;
+    // Used for locking when accessing/modifying set of subscribers.
+    std::mutex d_subscriberLock;
 
-    const Ledger &d_ledger;
-
+    Ledger &d_ledger;
   public:
     Store() = delete;
 
-    Store(const Ledger &ledger, std::string& uid);
+    Store(Ledger &ledger, std::string& uid);
     ~Store();
 
-    void publishCreateValue(Value& val);
-    void publishValue(std::string uid, Value& val);
+    void createMessage(Value& val);
+    void updateMessage(const GUID& guid, Value& val);
+    void deleteMessage(const GUID& guid);
+
+    void cleanDeadMessages();
 
     void subscribe(WSServer::ConnectionSp conn);
 
@@ -58,7 +65,7 @@ class Store {
 
   private:
     // Emits the value with the given uid to all subscribed clients.
-    void emitValue(std::string uid);
+    void emitMessage(std::weak_ptr<Message> msg);
 };
 
 } // namespace rtdb
