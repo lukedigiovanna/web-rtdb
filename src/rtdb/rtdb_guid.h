@@ -34,12 +34,12 @@ class GUID {
   private:
     char d_val[GUID_LENGTH];
 
+  public:
     GUID();
     GUID(const GUID &guid);
 
     ~GUID();
 
-  public:
     bool operator==(const GUID &rhs) const;
 
     friend struct std::hash<GUID>;

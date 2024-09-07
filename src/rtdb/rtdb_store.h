@@ -2,6 +2,7 @@
 #define RTDB_STORE_H
 
 #include "rtdb_ledger.h"
+#include "rtdb_message.h"
 #include "rtdb_value.h"
 #include "rtdb_wsserver.h"
 
@@ -14,12 +15,29 @@
 
 namespace rtdb {
 
-// Stores
+
+// A store is specialized data structure for storing messages in a time-ordered
+// series. It enables efficient lookups of alive messages and pruning of dead
+// messages. It also enables efficient lookups and modifications to messages
+// by id. 
 class Store {
+  private:
+    struct DLLNode {
+      DLLNode* prev;
+      DLLNode* next;
+      Message message;
+
+      DLLNode(Value& val);
+      DLLNode(const DLLNode&) = delete;
+    };
   private:
     // identifer
     std::string d_uid;
-    std::unordered_map<std::string, Value> d_data;
+
+    DLLNode* headNode;
+    DLLNode* tailNode;
+
+    std::unordered_map<std::string, DLLNode*> d_idToNode;
     std::set<WSServer::ConnectionSp> d_subscribers;
     std::mutex d_lock;
 
