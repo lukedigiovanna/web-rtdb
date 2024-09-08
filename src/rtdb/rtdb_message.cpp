@@ -4,7 +4,7 @@
 
 namespace rtdb {
 
-Message::Message(Value& value) :
+Message::Message(const Value& value) :
     d_value(value), 
     d_createdTimestamp(utils::timeMillis()),
     d_updatedTimestamp(d_createdTimestamp) {

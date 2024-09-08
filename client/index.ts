@@ -20,7 +20,7 @@ class RTDBClient {
         this.socket = socket;
         this.socket.on("message", (data: RawData, isBinary: boolean) => {
             console.log(data);
-        })
+        });
     }
 
     public static connect(host: string): Promise<RTDBClient> {

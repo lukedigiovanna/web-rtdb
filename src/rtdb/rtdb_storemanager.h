@@ -10,12 +10,9 @@ namespace rtdb {
 
 // Manages the creation and all store instances
 class StoreManager {
-  public:
-    using StorePtr = std::unique_ptr<Store>;
-
   private:
-    Ledger d_ledger;
-    std::unordered_map<std::string, StorePtr> d_stores;
+    Ledger& d_ledger;
+    std::unordered_map<std::string, std::unique_ptr<Store>> d_stores;
 
   public:
     StoreManager() = delete;
@@ -24,10 +21,10 @@ class StoreManager {
   private:
     // Called when trying to access a store that does not yet exist
     // (the user should never explicitly have to create a store)
-    StorePtr createStore(std::string id);
+    std::unique_ptr<Store>& createStore(const std::string& id);
 
   public:
-    StorePtr getStore(std::string id);
+    std::unique_ptr<Store>& getStore(const std::string& id);
 };
 
 } // namespace rtdb

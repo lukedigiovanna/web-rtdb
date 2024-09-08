@@ -1,6 +1,8 @@
-#include <functional>
 #ifndef RTDB_GUID_H
 #define RTDB_GUID_H
+
+#include <ostream>
+#include <functional>
 
 #define GUID_LENGTH 16
 #define GUID_ALPHABET "abcdefghijklmnopqrstuvwxyz012456789"
@@ -32,18 +34,25 @@ namespace rtdb {
 
 class GUID {
   private:
-    char d_val[GUID_LENGTH];
+    char d_val[GUID_LENGTH + 1];
 
   public:
     GUID();
     GUID(const GUID &guid);
 
-    ~GUID();
+    ~GUID() = default;
+
+    const char* c_str() const;
 
     bool operator==(const GUID &rhs) const;
 
     friend struct std::hash<GUID>;
+    friend std::ostream& operator<<(std::ostream& is, GUID& guid);
 };
+
+inline const char* GUID::c_str() const {
+    return d_val;
+}
 
 inline bool GUID::operator==(const GUID &rhs) const {
     for (int i = 0; i < GUID_LENGTH; i++) {
@@ -68,6 +77,14 @@ template <> struct hash<rtdb::GUID> {
         return h;
     }
 };
+
+inline ostream& operator<<(ostream& os, rtdb::GUID& guid) {
+    for (int i = 0; i < GUID_LENGTH; i++) {
+        os << guid.c_str()[i];
+    }
+    return os;
+}
+
 
 } // namespace std
 

@@ -14,7 +14,8 @@ class Message {
     Value d_value;
 
   public:
-    Message(Value& value);
+    // Makes a copy of the given value
+    Message(const Value& value);
 
     // Accessors
     const GUID& guid() const;

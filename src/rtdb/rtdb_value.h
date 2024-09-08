@@ -56,6 +56,8 @@ class Value {
     Value(const JsonObject &jsonObjVal);
     Value(const JsonArray &jsonArrayVal);
 
+    Value(const Value&) = default;
+
     // Accessors
 
     ValueType type() const;

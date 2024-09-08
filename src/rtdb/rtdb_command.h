@@ -61,7 +61,7 @@ static CommandConfigStore commandOperationConfig = {
      {
          {"storeid", e_STRING},
          {"ttl", e_INT},
-         {"payload", e_JSON_OBJECT},
+         {"value", e_INT}, // CHANGE THIS.
      }},
     {e_QUERY,
      {

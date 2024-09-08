@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 #include <websocketpp/connection.hpp>
 
@@ -28,7 +29,7 @@ class Store {
       std::unique_ptr<Message> message;
 
       DLLNode();
-      DLLNode(Value& val);
+      DLLNode(const Value& val);
       
       DLLNode(const DLLNode&) = delete;
     };
@@ -50,11 +51,11 @@ class Store {
   public:
     Store() = delete;
 
-    Store(Ledger &ledger, std::string& uid);
+    Store(Ledger &ledger, const std::string& uid);
     ~Store();
 
-    void createMessage(Value& val);
-    void updateMessage(const GUID& guid, Value& val);
+    void createMessage(const Value& val);
+    void updateMessage(const GUID& guid, const Value& val);
     void deleteMessage(const GUID& guid);
 
     void cleanDeadMessages();
@@ -65,7 +66,8 @@ class Store {
 
   private:
     // Emits the value with the given uid to all subscribed clients.
-    void emitMessage(std::weak_ptr<Message> msg);
+    void emitMessageUpdate(const std::unique_ptr<Message>& msg);
+    void emitMessageDelete(const std::unique_ptr<Message>& msg);
 };
 
 } // namespace rtdb

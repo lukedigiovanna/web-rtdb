@@ -112,9 +112,9 @@ void Command::parse() {
     // Tokenization should guarantee the content of a TOK_OPERATION is valid
     assert(operationPair != commandOperationStrings.end());
 
-    CommandOperation operation = operationPair->second;
+    d_operation = operationPair->second;
 
-    CommandConfigParams &params = commandOperationConfig[operation];
+    CommandConfigParams &params = commandOperationConfig[d_operation];
 
     for (int i = 1; i < tokens.size(); i++) {
         // Expect identifer, then equals, then value
