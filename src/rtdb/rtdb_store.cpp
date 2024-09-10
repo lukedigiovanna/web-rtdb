@@ -57,7 +57,7 @@ void Store::emitMessageUpdate(const std::unique_ptr<Message>& msg) {
     
     for (const auto& conn : d_subscribers) {
         LOG_INFO << "Emitting message to " << conn->get_host();
-        conn->send(std::string{msg->guid().c_str()});
+        conn->send(msg->json());
     }
 }
 

@@ -4,6 +4,8 @@
 #include "rtdb_guid.h"
 #include "rtdb_value.h"
 
+#include <string>
+
 namespace rtdb {
 
 class Message {
@@ -12,6 +14,9 @@ class Message {
     long d_createdTimestamp;
     long d_updatedTimestamp;
     Value d_value;
+
+    std::string d_cachedJson;
+    bool d_dirty;
 
   public:
     // Makes a copy of the given value
@@ -23,8 +28,12 @@ class Message {
     const long updatedAt() const;
     const Value& value() const;
 
+    // Constructs a JSON representation of this message.
+    // TODO: Cache this value
+    std::string json();
+
     // Modifiers
-    void updateValue(Value& value) const;
+    void updateValue(Value& value);
 };
 
 inline const GUID& Message::guid() const {

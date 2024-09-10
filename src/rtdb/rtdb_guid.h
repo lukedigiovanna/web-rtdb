@@ -47,7 +47,7 @@ class GUID {
     bool operator==(const GUID &rhs) const;
 
     friend struct std::hash<GUID>;
-    friend std::ostream& operator<<(std::ostream& is, GUID& guid);
+    friend std::ostream& operator<<(std::ostream& os, GUID const& guid);
 };
 
 inline const char* GUID::c_str() const {
@@ -61,6 +61,11 @@ inline bool GUID::operator==(const GUID &rhs) const {
         }
     }
     return true;
+}
+
+inline std::ostream& operator<<(std::ostream& os, rtdb::GUID const& guid) {
+    os << guid.c_str();
+    return os;
 }
 
 } // namespace rtdb
@@ -77,14 +82,6 @@ template <> struct hash<rtdb::GUID> {
         return h;
     }
 };
-
-inline ostream& operator<<(ostream& os, rtdb::GUID& guid) {
-    for (int i = 0; i < GUID_LENGTH; i++) {
-        os << guid.c_str()[i];
-    }
-    return os;
-}
-
 
 } // namespace std
 

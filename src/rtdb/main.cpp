@@ -7,6 +7,8 @@
 #include <thread>
 
 int main(int argc, char *argv[]) {
+    srand(time(NULL));
+
     rtdb::AppConfig config = {.port = 9002};
 
     rtdb::Application application(config);
