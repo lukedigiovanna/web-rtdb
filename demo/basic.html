@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <button onclick="sendMessage()">
+            thing
+        </button>
+        <script>
+            const ws = new WebSocket("http://localhost:9002");
+
+            ws.onmessage = (ev) => {
+                console.log(ev);
+            }
+
+            ws.onopen = () => {
+                ws.send("subscribe_all storeid=\"test\"");
+            }
+
+            function sendMessage() {
+                ws.send("push storeid=\"test\" value=5");
+            }
+        </script>
+    </body>
+</html>
