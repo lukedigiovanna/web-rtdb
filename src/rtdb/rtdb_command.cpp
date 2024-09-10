@@ -103,7 +103,7 @@ void Command::parse() {
     }
 
     if (tokens[0].type != e_TOK_OPERATION) {
-        throw CommandParseError("First token in command must be an operation");
+        throw CommandParseError("Unknown operation: \'" + tokens[0].content + "\'");
     }
 
     std::string &operationName = tokens[0].content;

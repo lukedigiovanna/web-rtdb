@@ -15,8 +15,9 @@ class Message {
     long d_updatedTimestamp;
     Value d_value;
 
-    std::string d_cachedJson;
-    bool d_dirty;
+    // Part of caching, so mark mutable to not affect const-ness
+    mutable std::string d_cachedJson;
+    mutable bool d_dirty;
 
   public:
     // Makes a copy of the given value
@@ -29,8 +30,7 @@ class Message {
     const Value& value() const;
 
     // Constructs a JSON representation of this message.
-    // TODO: Cache this value
-    std::string json();
+    std::string json() const;
 
     // Modifiers
     void updateValue(Value& value);

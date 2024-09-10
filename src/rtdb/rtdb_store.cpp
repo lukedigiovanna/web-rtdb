@@ -1,6 +1,7 @@
 #include "rtdb_store.h"
 
 #include "rtdb_logger.h"
+#include "rtdb_responseencoder.h"
 
 namespace rtdb {
 
@@ -50,14 +51,11 @@ void Store::subscribe(WSServer::ConnectionSp conn) {
 }
 
 void Store::emitMessageUpdate(const std::unique_ptr<Message>& msg) {
-    std::stringstream ss;
-    // ss << msg->guid();
-
     std::unique_lock _{d_subscriberLock};
     
     for (const auto& conn : d_subscribers) {
         LOG_INFO << "Emitting message to " << conn->get_host();
-        conn->send(msg->json());
+        conn->send(ResponseEncoder::encodeMessage(*msg));
     }
 }
 

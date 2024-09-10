@@ -2,6 +2,7 @@
 
 #include "rtdb_command.h"
 #include "rtdb_logger.h"
+#include "rtdb_responseencoder.h"
 
 namespace rtdb {
 
@@ -51,12 +52,13 @@ void WSServer::onMessage(websocketpp::connection_hdl handle,
                          Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
     if (d_messageCb) {
+        auto connection = d_server.get_con_from_hdl(handle);
         try {
-            auto connection = d_server.get_con_from_hdl(handle);
             Command command(msg->get_payload());
             d_messageCb(connection, command);
         } catch (CommandParseError &err) {
             LOG_ERROR << err.what();
+            connection->send(ResponseEncoder::encodeError(err.what()));
         } catch (websocketpp::exception &err) {
             LOG_ERROR << err.what();
         }

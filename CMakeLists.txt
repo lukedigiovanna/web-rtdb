@@ -18,9 +18,10 @@ add_executable(WebRTDB
     src/rtdb/rtdb_logger.cpp
     src/rtdb/rtdb_ledger.cpp
     src/rtdb/rtdb_message.cpp
-    src/rtdb/rtdb_value.cpp
+    src/rtdb/rtdb_responseencoder.cpp
     src/rtdb/rtdb_store.cpp
     src/rtdb/rtdb_storemanager.cpp
+    src/rtdb/rtdb_value.cpp
     src/rtdb/rtdb_wsserver.cpp
 )
 

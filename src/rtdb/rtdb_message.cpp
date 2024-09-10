@@ -12,7 +12,7 @@ Message::Message(const Value& value) :
     d_dirty(true) {
 }
 
-std::string Message::json() {
+std::string Message::json() const {
     if (d_dirty) {
         std::stringstream ss;
         ss << "{";

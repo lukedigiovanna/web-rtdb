@@ -11,8 +11,10 @@
             const ws = new WebSocket("http://localhost:9002");
 
             ws.onmessage = (ev) => {
-                const {guid, created, updated, value} = JSON.parse(ev.data);
-                console.log(guid, new Date(created).toLocaleTimeString(), value);
+                console.log(ev.data);
+                console.log(JSON.parse(ev.data));
+                // const {guid, created, updated, value} = JSON.parse(ev.data);
+                // console.log(guid, new Date(created).toLocaleTimeString(), value);
             }
 
             ws.onopen = () => {
@@ -20,7 +22,7 @@
             }
 
             function sendMessage() {
-                ws.send("push storeid=\"test\" value=69");
+                ws.send("pusha storeid=\"test\" value=69");
             }
         </script>
     </body>
