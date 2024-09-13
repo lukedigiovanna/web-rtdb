@@ -2,6 +2,7 @@
 #define RTDB_MESSAGE_H
 
 #include "rtdb_guid.h"
+#include "rtdb_utils.h"
 #include "rtdb_value.h"
 
 #include <string>
@@ -11,8 +12,13 @@ namespace rtdb {
 class Message {
   private:
     GUID d_guid;
+    // The system time this message was created.
     long d_createdTimestamp;
+    // The system time of the last state update to this message
     long d_updatedTimestamp;
+    // Amount of time since creation until this message should be purged.
+    int d_ttl;
+    // The actual value stored in this message.
     Value d_value;
 
     // Part of caching, so mark mutable to not affect const-ness
@@ -21,36 +27,37 @@ class Message {
 
   public:
     // Makes a copy of the given value
-    Message(const Value& value);
+    Message(const Value &value);
 
     // Accessors
-    const GUID& guid() const;
-    const long createdAt() const;
-    const long updatedAt() const;
-    const Value& value() const;
+    const GUID &guid() const;
+    long createdAt() const;
+    long updatedAt() const;
+    int ttl() const;
+    bool dead() const;
+    const Value &value() const;
 
     // Constructs a JSON representation of this message.
     std::string json() const;
 
     // Modifiers
-    void updateValue(Value& value);
+    void updateValue(Value &value);
 };
 
-inline const GUID& Message::guid() const {
-  return d_guid;
+inline const GUID &Message::guid() const { return d_guid; }
+
+inline long Message::createdAt() const { return d_createdTimestamp; }
+
+inline long Message::updatedAt() const { return d_updatedTimestamp; }
+
+inline int Message::ttl() const { return d_ttl; }
+
+inline bool Message::dead() const {
+    return d_ttl < 0 ? false
+                     : utils::timeMillis() - d_createdTimestamp >= d_ttl;
 }
 
-inline const long Message::createdAt() const {
-  return d_createdTimestamp;
-}
-
-inline const long Message::updatedAt() const {
-  return d_updatedTimestamp;
-}
-
-inline const Value& Message::value() const {
-  return d_value;
-}
+inline const Value &Message::value() const { return d_value; }
 
 } // namespace rtdb
 

@@ -15,6 +15,8 @@ Value::Value(int intVal) : d_type(e_INT), d_value(intVal) {}
 
 Value::Value(float floatVal) : d_type(e_FLOAT), d_value(floatVal) {}
 
+Value::Value(bool boolVal) : d_type(e_BOOLEAN), d_value(boolVal) {}
+
 Value::Value(const std::string &stringVal)
     : d_type(e_STRING), d_value(stringVal) {}
 
@@ -30,6 +32,8 @@ std::string Value::str() const {
         return std::to_string(asFloat());
     case e_INT:
         return std::to_string(asInt());
+    case e_BOOLEAN:
+        return asBool() ? "true" : "false";
     case e_STRING:
         return asString();
     case e_NULL:
@@ -109,12 +113,11 @@ ValueType parseNumeric(scit &it, const scit &strEnd, std::stringstream &ss) {
 
 // Simply checks the iterator matches "null" and iterates the given
 // iterator past null. If this is not a match, then an error is thrown.
-void parseNull(scit &it, const scit &strEnd) {
+void validateKeyword(scit &it, const scit &strEnd, const std::string &keyword) {
     // Check if there is an exact match to "null".
-    const std::string null = "null";
-    for (const auto c : null) {
+    for (const auto c : keyword) {
         if (it == strEnd || *it != c) {
-            throw ValueParseError("Expected 'null' value.");
+            throw ValueParseError("Unexpected value");
         }
         it++;
     }
@@ -146,8 +149,14 @@ Value Value::parse(scit &it, const scit &strEnd) {
     } else if (*it == '[') {
         // Parse JSON array
     } else if (*it == 'n') {
-        parseNull(it, strEnd);
-        return Value();
+        validateKeyword(it, strEnd, "null");
+        return Value(); // null value
+    } else if (*it == 'f') {
+        validateKeyword(it, strEnd, "false");
+        return Value(false);
+    } else if (*it == 't') {
+        validateKeyword(it, strEnd, "true");
+        return Value(true);
     } else {
         throw ValueParseError("Unexpected token while parsing value: " +
                               std::string(1, *it));

@@ -103,7 +103,8 @@ void Command::parse() {
     }
 
     if (tokens[0].type != e_TOK_OPERATION) {
-        throw CommandParseError("Unknown operation: \'" + tokens[0].content + "\'");
+        throw CommandParseError("Unknown operation: \'" + tokens[0].content +
+                                "\'");
     }
 
     std::string &operationName = tokens[0].content;
@@ -150,7 +151,7 @@ void Command::parse() {
         }
 
         Value &val = tokens[i].value;
-        if (val.type() != identifierPair->second) {
+        if ((val.type() & identifierPair->second) == 0) {
             throw CommandParseError("Expected different type for parameter \'" +
                                     identifier + "\'");
         }

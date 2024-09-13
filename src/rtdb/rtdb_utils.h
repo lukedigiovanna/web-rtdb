@@ -1,8 +1,8 @@
 #ifndef RTDB_UTILS_H
 #define RTDB_UTILS_H
 
-#include <string>
 #include <chrono>
+#include <string>
 
 namespace rtdb {
 namespace utils {
@@ -18,7 +18,8 @@ inline void advanceWhiteSpace(std::string::const_iterator &it,
 
 inline long timeMillis() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
+               std::chrono::system_clock::now().time_since_epoch())
+        .count();
 }
 
 } // namespace utils

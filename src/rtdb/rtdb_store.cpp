@@ -5,13 +5,13 @@
 
 namespace rtdb {
 
-Store::DLLNode::DLLNode(const Value& val) : message(std::make_unique<Message>(val)) {
-
-}
+Store::DLLNode::DLLNode(const Value &val)
+    : message(std::make_unique<Message>(val)) {}
 
 Store::DLLNode::DLLNode() {}; // everything null
 
-Store::Store(Ledger &ledger, const std::string& uid) : d_ledger(ledger), d_uid(uid) {
+Store::Store(Ledger &ledger, const std::string &uid)
+    : d_ledger(ledger), d_uid(uid) {
     // Set up initial head and tail sentinel nodes
     headNode = std::make_shared<DLLNode>();
     tailNode = std::make_shared<DLLNode>();
@@ -21,10 +21,9 @@ Store::Store(Ledger &ledger, const std::string& uid) : d_ledger(ledger), d_uid(u
     tailNode->next = nullptr;
 }
 
-Store::~Store() {
-}
+Store::~Store() {}
 
-void Store::createMessage(const Value& val) {
+void Store::createMessage(const Value &val) {
     std::shared_ptr<DLLNode> newNode = std::make_shared<DLLNode>(val);
     {
         std::unique_lock _{d_dataLock};
@@ -37,11 +36,9 @@ void Store::createMessage(const Value& val) {
     emitMessageUpdate(newNode->message);
 }
 
-void Store::updateMessage(const GUID& guid, const Value& val) {
+void Store::updateMessage(const GUID &guid, const Value &val) {}
 
-}
-
-void Store::deleteMessage(const GUID& guid) {
+void Store::deleteMessage(const GUID &guid) {
     // Use map to quickly find the node associated with this message.
 }
 
@@ -50,17 +47,15 @@ void Store::subscribe(WSServer::ConnectionSp conn) {
     d_subscribers.insert(conn);
 }
 
-void Store::emitMessageUpdate(const std::unique_ptr<Message>& msg) {
+void Store::emitMessageUpdate(const std::unique_ptr<Message> &msg) {
     std::unique_lock _{d_subscriberLock};
-    
-    for (const auto& conn : d_subscribers) {
+
+    for (const auto &conn : d_subscribers) {
         LOG_INFO << "Emitting message to " << conn->get_host();
         conn->send(ResponseEncoder::encodeMessage(*msg));
     }
 }
 
-void Store::emitMessageDelete(const std::unique_ptr<Message>& msg) {
-
-}
+void Store::emitMessageDelete(const std::unique_ptr<Message> &msg) {}
 
 } // namespace rtdb

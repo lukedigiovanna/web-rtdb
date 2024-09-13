@@ -1,21 +1,23 @@
 #ifndef RTDB_VALUE_H
 #define RTDB_VALUE_H
 
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
-#include <stdexcept>
 
 namespace rtdb {
 
 enum ValueType {
-    e_FLOAT,
-    e_INT,
-    e_STRING,
-    e_JSON_OBJECT,
-    e_JSON_ARRAY,
-    e_NULL
+    e_FLOAT = (1 << 0),
+    e_INT = (1 << 1),
+    e_STRING = (1 << 2),
+    e_BOOLEAN = (1 << 3),
+    e_JSON_OBJECT = (1 << 4),
+    e_JSON_ARRAY = (1 << 5),
+    e_NULL = (1 << 6),
+    e_ANY = -1 // all 1 bits
 };
 
 struct ValueParseError : public std::runtime_error {
@@ -33,8 +35,8 @@ class Value {
     using JsonArray = std::vector<Value>;
 
   private:
-    using VariantValue = std::variant<std::monostate, int, float, std::string,
-                                      JsonArray, JsonObject>;
+    using VariantValue = std::variant<std::monostate, int, float, bool,
+                                      std::string, JsonArray, JsonObject>;
 
     ValueType d_type;
     VariantValue d_value;
@@ -52,11 +54,12 @@ class Value {
 
     Value(int intVal);
     Value(float floatVal);
+    Value(bool boolVal);
     Value(const std::string &stringVal);
     Value(const JsonObject &jsonObjVal);
     Value(const JsonArray &jsonArrayVal);
 
-    Value(const Value&) = default;
+    Value(const Value &) = default;
 
     // Accessors
 
@@ -66,6 +69,7 @@ class Value {
 
     int asInt() const;
     float asFloat() const;
+    bool asBool() const;
     const std::string &asString() const;
     const JsonObject &asJsonObject() const;
     const JsonArray &asJsonArray() const;
@@ -87,6 +91,13 @@ inline float Value::asFloat() const {
         throw std::bad_variant_access();
     }
     return std::get<float>(d_value);
+}
+
+inline bool Value::asBool() const {
+    if (d_type != e_BOOLEAN) {
+        throw std::bad_variant_access();
+    }
+    return std::get<bool>(d_value);
 }
 
 inline const std::string &Value::asString() const {

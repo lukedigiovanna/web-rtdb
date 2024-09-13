@@ -31,7 +31,7 @@ class Application {
     void processCommand(WSServer::ConnectionSp conn, const Command &command);
 
     // Can be called by any thread to enqueue a command for execution.
-    void enqueueCommand(WSServer::ConnectionSp conn, const Command& command);
+    void enqueueCommand(WSServer::ConnectionSp conn, const Command &command);
 
     // Starts listening to connections
     void start();

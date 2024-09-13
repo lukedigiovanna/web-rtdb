@@ -11,11 +11,11 @@ class ResponseEncoder {
   public:
     // static std::string encodeMessages(const std::vector<Message> )
     // Encodes a message in the proper response format
-    static std::string encodeMessage(const Message& msg);
+    static std::string encodeMessage(const Message &msg);
     // Encodes an error message in the proper response format
-    static std::string encodeError(const std::string& errMsg);
+    static std::string encodeError(const std::string &errMsg);
 };
 
-}
+} // namespace rtdb
 
 #endif

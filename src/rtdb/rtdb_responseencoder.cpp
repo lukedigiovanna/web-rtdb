@@ -4,7 +4,7 @@
 
 namespace rtdb {
 
-std::string ResponseEncoder::encodeMessage(const Message& msg) {
+std::string ResponseEncoder::encodeMessage(const Message &msg) {
     std::stringstream ss;
     ss << "{";
     ss << "\"type\":\"message_value\",";
@@ -13,7 +13,7 @@ std::string ResponseEncoder::encodeMessage(const Message& msg) {
     return ss.str();
 }
 
-std::string ResponseEncoder::encodeError(const std::string& errMsg) {
+std::string ResponseEncoder::encodeError(const std::string &errMsg) {
     std::stringstream ss;
     ss << "{";
     ss << "\"type\":\"error\",";
@@ -22,4 +22,4 @@ std::string ResponseEncoder::encodeError(const std::string& errMsg) {
     return ss.str();
 }
 
-}
+} // namespace rtdb

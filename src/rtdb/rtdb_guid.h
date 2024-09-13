@@ -1,8 +1,8 @@
 #ifndef RTDB_GUID_H
 #define RTDB_GUID_H
 
-#include <ostream>
 #include <functional>
+#include <ostream>
 
 #define GUID_LENGTH 16
 #define GUID_ALPHABET "abcdefghijklmnopqrstuvwxyz012456789"
@@ -42,17 +42,15 @@ class GUID {
 
     ~GUID() = default;
 
-    const char* c_str() const;
+    const char *c_str() const;
 
     bool operator==(const GUID &rhs) const;
 
     friend struct std::hash<GUID>;
-    friend std::ostream& operator<<(std::ostream& os, GUID const& guid);
+    friend std::ostream &operator<<(std::ostream &os, GUID const &guid);
 };
 
-inline const char* GUID::c_str() const {
-    return d_val;
-}
+inline const char *GUID::c_str() const { return d_val; }
 
 inline bool GUID::operator==(const GUID &rhs) const {
     for (int i = 0; i < GUID_LENGTH; i++) {
@@ -63,7 +61,7 @@ inline bool GUID::operator==(const GUID &rhs) const {
     return true;
 }
 
-inline std::ostream& operator<<(std::ostream& os, rtdb::GUID const& guid) {
+inline std::ostream &operator<<(std::ostream &os, rtdb::GUID const &guid) {
     os << guid.c_str();
     return os;
 }

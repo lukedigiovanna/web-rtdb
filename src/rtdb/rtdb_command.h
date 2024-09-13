@@ -61,7 +61,7 @@ static CommandConfigStore commandOperationConfig = {
      {
          {"storeid", e_STRING},
          {"ttl", e_INT},
-         {"value", e_INT}, // CHANGE THIS.
+         {"value", e_ANY},
      }},
     {e_QUERY,
      {
@@ -107,30 +107,28 @@ class Command {
     // Called internally by the constructor
     // Parses the commandString
     void parse();
-  
+
   public:
     // Accessors
 
     CommandOperation operation() const;
-    const Value& getParameter(const std::string& parameterName) const;
-    const std::string& str() const;
+    const Value &getParameter(const std::string &parameterName) const;
+    const std::string &str() const;
 };
 
-inline CommandOperation Command::operation() const {
-    return d_operation;
-}
+inline CommandOperation Command::operation() const { return d_operation; }
 
-inline const Value& Command::getParameter(const std::string& parameterName) const {
+inline const Value &
+Command::getParameter(const std::string &parameterName) const {
     auto f = d_kv.find(parameterName);
     if (f == d_kv.end()) {
-        throw std::runtime_error("Parameter \'" + parameterName + "\' does not exist on this command.");
+        throw std::runtime_error("Parameter \'" + parameterName +
+                                 "\' does not exist on this command.");
     }
     return f->second;
-} 
-
-inline const std::string& Command::str() const {
-    return d_commandString;
 }
+
+inline const std::string &Command::str() const { return d_commandString; }
 
 } // namespace rtdb
 

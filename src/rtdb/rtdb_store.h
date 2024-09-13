@@ -6,16 +6,15 @@
 #include "rtdb_value.h"
 #include "rtdb_wsserver.h"
 
+#include <memory>
 #include <mutex>
 #include <set>
 #include <string>
 #include <unordered_map>
-#include <memory>
 
 #include <websocketpp/connection.hpp>
 
 namespace rtdb {
-
 
 // A store is specialized data structure for storing messages in a time-ordered
 // series. It enables efficient lookups of alive messages and pruning of dead
@@ -24,15 +23,16 @@ namespace rtdb {
 class Store {
   private:
     struct DLLNode {
-      std::shared_ptr<DLLNode> prev;
-      std::shared_ptr<DLLNode> next;
-      std::unique_ptr<Message> message;
+        std::shared_ptr<DLLNode> prev;
+        std::shared_ptr<DLLNode> next;
+        std::unique_ptr<Message> message;
 
-      DLLNode();
-      DLLNode(const Value& val);
-      
-      DLLNode(const DLLNode&) = delete;
+        DLLNode();
+        DLLNode(const Value &val);
+
+        DLLNode(const DLLNode &) = delete;
     };
+
   private:
     // identifer
     std::string d_uid;
@@ -48,15 +48,16 @@ class Store {
     std::mutex d_subscriberLock;
 
     Ledger &d_ledger;
+
   public:
     Store() = delete;
 
-    Store(Ledger &ledger, const std::string& uid);
+    Store(Ledger &ledger, const std::string &uid);
     ~Store();
 
-    void createMessage(const Value& val);
-    void updateMessage(const GUID& guid, const Value& val);
-    void deleteMessage(const GUID& guid);
+    void createMessage(const Value &val);
+    void updateMessage(const GUID &guid, const Value &val);
+    void deleteMessage(const GUID &guid);
 
     void cleanDeadMessages();
 
@@ -66,8 +67,8 @@ class Store {
 
   private:
     // Emits the value with the given uid to all subscribed clients.
-    void emitMessageUpdate(const std::unique_ptr<Message>& msg);
-    void emitMessageDelete(const std::unique_ptr<Message>& msg);
+    void emitMessageUpdate(const std::unique_ptr<Message> &msg);
+    void emitMessageDelete(const std::unique_ptr<Message> &msg);
 };
 
 } // namespace rtdb
