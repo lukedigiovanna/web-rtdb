@@ -47,6 +47,11 @@ void Store::subscribe(WSServer::ConnectionSp conn) {
     d_subscribers.insert(conn);
 }
 
+void Store::unsubscribe(WSServer::ConnectionSp conn) {
+    std::unique_lock<std::mutex> _{d_subscriberLock};
+    d_subscribers.erase(conn);
+}
+
 void Store::emitMessageUpdate(const std::unique_ptr<Message> &msg) {
     std::unique_lock _{d_subscriberLock};
 

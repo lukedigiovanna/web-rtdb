@@ -12,6 +12,10 @@ Application::Application(const AppConfig &config)
         [&](WSServer::ConnectionSp conn, const Command &command) {
             enqueueCommand(conn, command);
         });
+
+    d_server.setOnCloseCallback([&](WSServer::ConnectionSp conn) {
+        d_storeManager.purgeSubscriptions(conn);
+    });
 }
 
 void Application::start() {

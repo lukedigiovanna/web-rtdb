@@ -19,12 +19,14 @@ class WSServer {
     using ConnectionSp =
         std::shared_ptr<websocketpp::connection<websocketpp::config::asio>>;
     using MessageCb = std::function<void(ConnectionSp, const Command &)>;
+    using CloseCb = std::function<void(ConnectionSp)>;
     using Server = websocketpp::server<websocketpp::config::asio>;
 
   private:
     Server d_server;
     const unsigned short port;
     MessageCb d_messageCb;
+    CloseCb d_closeCb;
 
     void onMessage(websocketpp::connection_hdl handle, Server::message_ptr msg);
     void onOpen(websocketpp::connection_hdl handle);
@@ -39,6 +41,7 @@ class WSServer {
     ~WSServer();
 
     void setOnMessageCallback(MessageCb cb);
+    void setOnCloseCallback(CloseCb cb);
 
     // Starts listening to connections on the current thread.
     void start();

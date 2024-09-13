@@ -13,6 +13,7 @@ class StoreManager {
   private:
     Ledger &d_ledger;
     std::unordered_map<std::string, std::unique_ptr<Store>> d_stores;
+    std::mutex d_lock;
 
   public:
     StoreManager() = delete;
@@ -25,6 +26,8 @@ class StoreManager {
 
   public:
     std::unique_ptr<Store> &getStore(const std::string &id);
+
+    void purgeSubscriptions(WSServer::ConnectionSp conn);
 };
 
 } // namespace rtdb

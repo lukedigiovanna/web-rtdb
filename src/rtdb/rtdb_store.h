@@ -62,6 +62,7 @@ class Store {
     void cleanDeadMessages();
 
     void subscribe(WSServer::ConnectionSp conn);
+    void unsubscribe(WSServer::ConnectionSp conn);
 
     static Ledger restoreFromLedger(const Ledger &ledger);
 

@@ -48,6 +48,8 @@ void WSServer::start() {
 
 void WSServer::setOnMessageCallback(MessageCb cb) { d_messageCb = cb; }
 
+void WSServer::setOnCloseCallback(CloseCb cb) { d_closeCb = cb; }
+
 void WSServer::onMessage(websocketpp::connection_hdl handle,
                          Server::message_ptr msg) {
     LOG_INFO << "Got message: " << msg->get_payload();
@@ -76,6 +78,9 @@ void WSServer::onOpen(websocketpp::connection_hdl handle) {
 void WSServer::onClose(websocketpp::connection_hdl handle) {
     auto conn = d_server.get_con_from_hdl(handle);
     LOG_INFO << "Client disconnected: " << conn->get_uri();
+    if (d_closeCb) {
+        d_closeCb(conn);
+    }
 }
 
 } // namespace rtdb
