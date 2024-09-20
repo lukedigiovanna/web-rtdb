@@ -40,7 +40,7 @@ class Store {
     std::shared_ptr<DLLNode> headNode;
     std::shared_ptr<DLLNode> tailNode;
 
-    std::unordered_map<GUID, std::shared_ptr<DLLNode>> d_idToNode;
+    std::unordered_map<std::string, std::shared_ptr<DLLNode>> d_idToNode;
     std::set<WSServer::ConnectionSp> d_subscribers;
     // Used for locking when accessing/modifying data.
     std::mutex d_dataLock;

@@ -11,7 +11,7 @@ namespace rtdb {
 
 class Message {
   private:
-    GUID d_guid;
+    std::string d_guid;
     // The system time this message was created.
     long d_createdTimestamp;
     // The system time of the last state update to this message
@@ -30,7 +30,7 @@ class Message {
     Message(const Value &value);
 
     // Accessors
-    const GUID &guid() const;
+    const std::string &guid() const;
     long createdAt() const;
     long updatedAt() const;
     int ttl() const;
@@ -44,7 +44,7 @@ class Message {
     void updateValue(Value &value);
 };
 
-inline const GUID &Message::guid() const { return d_guid; }
+inline const std::string &Message::guid() const { return d_guid; }
 
 inline long Message::createdAt() const { return d_createdTimestamp; }
 

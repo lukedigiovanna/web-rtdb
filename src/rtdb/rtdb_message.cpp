@@ -6,18 +6,18 @@
 namespace rtdb {
 
 Message::Message(const Value &value)
-    : d_value(value), d_createdTimestamp(utils::timeMillis()),
+    : d_guid(GUID::generateStr()), d_value(value), d_createdTimestamp(utils::timeMillis()),
       d_updatedTimestamp(d_createdTimestamp), d_dirty(true) {}
 
 std::string Message::json() const {
     if (d_dirty) {
         std::stringstream ss;
         ss << "{";
-        ss << "\"guid\":\"" << guid() << "\",";
-        ss << "\"created\":" << createdAt() << ",";
-        ss << "\"updated\":" << updatedAt() << ",";
-        ss << "\"ttl\":" << ttl() << ",";
-        ss << "\"value\":" << value().str();
+        ss << "\"guid\":\"" << d_guid << "\",";
+        ss << "\"created\":" << d_createdTimestamp << ",";
+        ss << "\"updated\":" << d_updatedTimestamp << ",";
+        ss << "\"ttl\":" << d_ttl << ",";
+        ss << "\"value\":" << d_value.str();
         ss << "}";
         d_cachedJson = ss.str();
         d_dirty = false;

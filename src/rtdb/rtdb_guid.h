@@ -6,7 +6,7 @@
 
 #define GUID_LENGTH 16
 #define GUID_ALPHABET "abcdefghijklmnopqrstuvwxyz012456789"
-#define GUID_ALPHABET_LENGTH sizeof(GUID_ALPHABET)
+#define GUID_ALPHABET_LENGTH (sizeof(GUID_ALPHABET) - 1)
 
 namespace rtdb {
 
@@ -48,6 +48,9 @@ class GUID {
 
     friend struct std::hash<GUID>;
     friend std::ostream &operator<<(std::ostream &os, GUID const &guid);
+
+  public:
+    static std::string generateStr();
 };
 
 inline const char *GUID::c_str() const { return d_val; }
