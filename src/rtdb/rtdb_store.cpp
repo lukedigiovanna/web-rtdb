@@ -56,7 +56,6 @@ void Store::emitMessageUpdate(const std::unique_ptr<Message> &msg) {
     std::unique_lock _{d_subscriberLock};
 
     for (const auto &conn : d_subscribers) {
-        LOG_INFO << "Emitting message to " << conn->get_host();
         conn->send(ResponseEncoder::encodeMessage(*msg));
     }
 }

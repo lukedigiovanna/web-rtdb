@@ -1,6 +1,7 @@
 #include "rtdb_message.h"
 
 #include "rtdb_utils.h"
+#include "rtdb_logger.h"
 #include <sstream>
 
 namespace rtdb {

@@ -21,11 +21,11 @@ GUID::GUID(const GUID &guid) {
 }
 
 std::string GUID::generateStr() {
-    std::string str(' ', GUID_LENGTH);
+    std::string str;
+    str.reserve(GUID_LENGTH);
     for (int i = 0; i < GUID_LENGTH; i++) {
-        str[i] = GUID_ALPHABET[rand() % GUID_ALPHABET_LENGTH];
+        str += GUID_ALPHABET[rand() % GUID_ALPHABET_LENGTH];
     }
-    LOG_WARNING << "generated guid: \"" << str << "\"";
     return str;
 }
 
