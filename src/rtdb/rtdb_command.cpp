@@ -158,6 +158,12 @@ void Command::parse() {
 
         d_kv[identifier] = val;
     }
+
+    for (const auto& param : params) {
+        if (d_kv.find(param.first) == d_kv.end()) {
+            throw CommandParseError("Missing required field for " + operationName + ": " + param.first);
+        }
+    }
 }
 
 } // namespace rtdb
