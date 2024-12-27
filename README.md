@@ -42,8 +42,8 @@ Every write/update/deletion operation is written to an on-disk ledger which can 
 
 This project depends on `websocketpp`, a header-only library for implementing
 websockets in C++. This also requires `asio`. These dependencies should be
-placed at the root of the workspace in `dependencies/include`. Then the 
-corresponding build script for your OS in `bin` can be ran to build the project.
+placed at the root of the workspace in `dependencies/include`. Then run the 
+corresponding build script for your OS in `bin` to build the project.
 
 ## Running
 
